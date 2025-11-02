@@ -338,4 +338,96 @@ nav a:hover {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+/* =========================================================
+   📱 Responsive Fixes for Mobile & Tablet
+   ========================================================= */
+
+@media (max-width: 1024px) {
+  .wrap {
+    padding: 24px 10px;
+    justify-content: flex-start;
+  }
+
+  .logo-wrap {
+    margin-bottom: 18px;
+  }
+
+  .rail {
+    width: 100%;
+    justify-content: center;
+    overflow-x: hidden;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .card {
+    flex: 0 0 calc(45% - 10px);
+    height: auto;
+    aspect-ratio: 3 / 4;
+    max-width: 230px;
+  }
+}
+
+/* ----------- Small screens (phones) ----------- */
+@media (max-width: 600px) {
+  .wrap {
+    align-items: center;
+    padding: 20px 8px;
+  }
+
+  .logo {
+    width: 120px;
+    height: 120px;
+  }
+
+  .title {
+    font-size: 22px;
+    margin-top: 8px;
+  }
+
+  .rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    overflow: visible;
+  }
+
+  .card {
+    width: 90%;
+    height: auto;
+    border-radius: 18px;
+    aspect-ratio: 3 / 4;
+  }
+
+  .overlay span {
+    font-size: 15px;
+  }
+
+  nav {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  nav a {
+    width: 80%;
+    text-align: center;
+    font-size: 12px;
+    padding: 8px 0;
+  }
+
+  .coming-box {
+    width: 85%;
+    padding: 28px 20px;
+  }
+
+  .coming-box h2 {
+    font-size: 22px;
+  }
+
+  .coming-box p {
+    font-size: 14px;
+  }
+}
 
