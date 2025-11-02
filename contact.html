@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | i2165062</title>
+  <link rel="stylesheet" href="assets/css/contact.css" />
+</head>
+<body>
+
+  <div class="contact-container">
+    <h1>Contact the <span>i2165062</span> Team</h1>
+    <p class="subtitle">
+      We’d love to hear from you — whether you’re an artist, developer, or cultural enthusiast.
+    </p>
+
+    <form
+      id="contactForm"
+      action="https://formspree.io/f/xgvnggyr"
+      method="POST"
+      class="contact-form"
+    >
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" name="name" placeholder="Enter your full name" required />
+      </div>
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="email" placeholder="Enter your email" required />
+      </div>
+
+      <div class="form-group">
+        <label>Subject</label>
+        <select name="subject" required>
+          <option value="">Select subject</option>
+          <option>General Inquiry</option>
+          <option>Collaboration</option>
+          <option>Media</option>
+          <option>Technical Support</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Message</label>
+        <textarea name="message" rows="5" placeholder="Type your message..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit">Send Message</button>
+    </form>
+
+    <div class="info-section">
+      <p><strong>Email:</strong> contact@i2165062.org</p>
+      <p><strong>Follow us:</strong></p>
+      <div class="social-links">
+        <a href="#">Twitter</a>
+        <a href="#">Telegram</a>
+        <a href="#">Instagram</a>
+        <a href="#">Medium</a>
+      </div>
+      <p class="location">🌍 Based in the Middle East • Global Team</p>
+    </div>
+
+    <div id="toast" class="toast">Message sent successfully!</div>
+  </div>
+
+  <div class="bg-animation"></div>
+
+  <script src="assets/js/contact.js"></script>
+</body>
+</html>

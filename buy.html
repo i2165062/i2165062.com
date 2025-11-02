@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Buy i2165062 Token</title>
+  
+  <!-- Main Styles -->
+  <link rel="stylesheet" href="assets/css/buy.css" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <div class="buy-container">
+    <h1 class="buy-title">Buy i2165062 Token</h1>
+    <p class="buy-subtitle">
+      Pre-register now to receive exclusive updates and access to the i2165062 network token before the official launch.
+    </p>
+
+    <form
+      id="buyForm"
+      class="buy-form"
+      action="https://formspree.io/f/xgvnggyr"
+      method="POST"
+    >
+      <!-- Username -->
+      <label>
+        Username
+        <input type="text" name="username" placeholder="Enter your username" required />
+      </label>
+
+      <!-- Email -->
+      <label>
+        Email
+        <input type="email" name="email" placeholder="Enter your email" required />
+      </label>
+
+      <!-- Hidden input for country -->
+      <input type="hidden" name="country" id="countryHidden" />
+
+      <!-- Country selector -->
+      <div class="country-field">
+        <span class="country-label">Country</span>
+
+        <button
+          type="button"
+          class="country-trigger"
+          id="countryTrigger"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+        >
+          <span class="country-trigger-flag">🌍</span>
+          <span class="country-trigger-text">Select your country</span>
+          <span class="country-caret">▾</span>
+        </button>
+
+        <!-- Dropdown panel -->
+        <div
+          class="country-panel"
+          id="countryPanel"
+          role="listbox"
+          aria-label="Select your country"
+        >
+          <div class="country-search">
+            <input
+              type="text"
+              id="countrySearch"
+              placeholder="Search country…"
+              autocomplete="off"
+            />
+          </div>
+          <ul class="country-list" id="countryList"></ul>
+        </div>
+      </div>
+
+      <!-- Toast notification -->
+      <div id="countryToast" class="toast" role="status" aria-live="polite"></div>
+
+      <!-- Note -->
+      <p class="note">
+        Purchase details and early-access instructions will be sent before the official token launch.
+      </p>
+
+      <!-- Submit button -->
+      <button type="submit" class="btn-submit">
+        Pre-register for i2165062 Token
+      </button>
+    </form>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/buy.js"></script>
+</body>
+</html>
