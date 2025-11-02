@@ -66,5 +66,16 @@ if (rail && dots.length) {
     dots.forEach((d, i) => d.classList.toggle('active', i === index));
   });
 }
+/* ---------- Friendly Coming Soon Alert ---------- */
+document.querySelectorAll('.card').forEach(card => {
+  const label = card.querySelector('.overlay span')?.textContent.trim();
+  if (label !== 'Iran') {
+    card.addEventListener('click', e => {
+      e.preventDefault(); // جلوگیری از باز شدن لینک
+      alert("Hey explorer! 🌍 This section is coming soon. Stay tuned!");
+    });
+  }
+});
+
 
 
