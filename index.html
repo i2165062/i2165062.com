@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>i2165062 — Home</title>
 
-  <!-- ✅ فایل استایل اصلی -->
+  <!-- استایل اصلی پروژه -->
   <link rel="stylesheet" href="assets/css/main.css" />
 </head>
-
 <body>
   <main class="wrap">
-
-    <!-- ---------- لوگو و عنوان ---------- -->
+    <!-- لوگو و عنوان -->
     <div class="logo-wrap">
       <div class="logo">
         <img src="images/pc2.png" alt="i2165062 logo" class="site-logo" />
@@ -21,15 +19,15 @@
       <div class="tagline">EVERYONE WILL FEEL IT</div>
     </div>
 
-    <!-- ---------- کارت‌ها ---------- -->
+    <!-- کارت‌ها -->
     <div class="rail" id="rail">
-      <!-- ✅ فقط این لینک فعال است -->
-      <a href="https://irannft.art" target="_blank" class="card" data-tilt="left">
+      <!-- فقط این لینک واقعی است -->
+      <a href="iran.html" class="card" data-tilt="left">
         <img src="images/iran.png" class="shot" alt="Iran" />
         <div class="overlay"><span>Iran</span></div>
       </a>
 
-      <!-- ✅ سایر کارت‌ها غیرفعال ولی قابل کلیک برای نمایش پیام -->
+      <!-- کارت‌های زیر فقط پیام Coming Soon نشان می‌دهند -->
       <a href="#" class="card" data-tilt="center">
         <img src="images/egypt.png" class="shot" alt="Egypt" />
         <div class="overlay"><span>Egypt</span></div>
@@ -46,9 +44,9 @@
       </a>
     </div>
 
-    <!-- ---------- منوی پایین ---------- -->
+    <!-- منوی پایین -->
     <nav>
-      <a href="intro.html">INTRO</a>
+      <a href="#intro">INTRO</a>
       <a href="what-is-i2165062.html">WHAT IS I2165062</a>
       <a href="buy.html">BUY</a>
       <a href="nft.html">NFT</a>
@@ -56,7 +54,17 @@
     </nav>
   </main>
 
-  <!-- ✅ فایل اسکریپت اصلی -->
+  <!-- ظرف مودال Coming Soon -->
+  <div id="comingModal" class="coming-modal">
+    <div class="coming-box">
+      <div class="emoji">🌍</div>
+      <h2>Hey Explorer!</h2>
+      <p>This section is <strong>coming soon</strong> — stay tuned for amazing stories and art!</p>
+      <button id="closeComing" class="close-btn">Got it!</button>
+    </div>
+  </div>
+
+  <!-- اسکریپت اصلی -->
   <script src="assets/js/main.js"></script>
 </body>
 </html>
