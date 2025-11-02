@@ -83,17 +83,25 @@
         Purchase details and early-access instructions will be sent before the official token launch.
       </p>
 
-      <!-- Submit button -->
-      <button type="submit" class="btn-submit">
+      <!-- ✅ hCaptcha -->
+      <div class="form-group captcha-group">
+        <div
+          class="h-captcha"
+          data-sitekey="834c365e-50ac-4f44-a194-1c3684f00cee"
+          data-callback="captchaSolved"
+          data-expired-callback="captchaExpired">
+        </div>
+      </div>
+
+      <!-- Submit button (disabled initially) -->
+      <button type="submit" class="btn-submit" id="submitBtn" disabled>
         Pre-register for i2165062 Token
       </button>
     </form>
   </div>
 
-  <!-- Scripts -->
+  <!-- ✅ Scripts -->
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
   <script src="../assets/js/buy.js"></script>
 </body>
 </html>
-
-
-
