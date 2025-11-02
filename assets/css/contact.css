@@ -177,3 +177,10 @@ body {
     padding: 30px 25px;
   }
 }
+.captcha-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
