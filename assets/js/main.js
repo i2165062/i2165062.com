@@ -1,4 +1,4 @@
-// --- Simple horizontal drag scroll ---
+/* ---------- Horizontal drag scroll ---------- */
 const rail = document.getElementById('rail');
 let isDown = false, startX, scrollLeft;
 
@@ -19,8 +19,7 @@ if (rail) {
   });
 }
 
-// --- Card subtle 3D hover tilt ---
-
+/* ---------- 3D hover tilt ---------- */
 document.querySelectorAll('.card').forEach(card => {
   const base = card.getAttribute('data-tilt') || 'center';
   card.addEventListener('mousemove', e => {
@@ -42,7 +41,7 @@ document.querySelectorAll('.card').forEach(card => {
   });
 });
 
-/* ---------- Dynamic Reflection Light ---------- */
+/* ---------- Dynamic reflection light ---------- */
 document.querySelectorAll('.card').forEach(card => {
   card.addEventListener('mousemove', e => {
     const rect = card.getBoundingClientRect();
@@ -56,26 +55,43 @@ document.querySelectorAll('.card').forEach(card => {
     card.style.removeProperty('--my');
   });
 });
-/* ---------- Dots Sync with Scroll ---------- */
-const dots = document.querySelectorAll('.dot');
-if (rail && dots.length) {
-  rail.addEventListener('scroll', () => {
-    const scrollPosition = rail.scrollLeft;
-    const totalWidth = rail.scrollWidth - rail.clientWidth;
-    const index = Math.round((scrollPosition / totalWidth) * (dots.length - 1));
-    dots.forEach((d, i) => d.classList.toggle('active', i === index));
-  });
+
+/* =========================================================
+   ✨ Friendly Coming Soon Modal ✨
+   ========================================================= */
+const modalHTML = `
+  <div id="comingModal" class="coming-modal">
+    <div class="coming-box">
+      <div class="emoji">🌍</div>
+      <h2>Hey Explorer!</h2>
+      <p>This section is <strong>coming soon</strong> — stay tuned for amazing stories and art!</p>
+      <button id="closeComing" class="close-btn">Got it!</button>
+    </div>
+  </div>
+`;
+document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+const comingModal = document.getElementById('comingModal');
+const closeComing = document.getElementById('closeComing');
+
+/* باز و بسته کردن مودال */
+function openComingSoon() {
+  comingModal.classList.add('active');
 }
-/* ---------- Friendly Coming Soon Alert ---------- */
+closeComing.addEventListener('click', () => {
+  comingModal.classList.remove('active');
+});
+comingModal.addEventListener('click', e => {
+  if (e.target === comingModal) comingModal.classList.remove('active');
+});
+
+/* فعال برای کارت‌های غیر ایران */
 document.querySelectorAll('.card').forEach(card => {
   const label = card.querySelector('.overlay span')?.textContent.trim();
   if (label !== 'Iran') {
     card.addEventListener('click', e => {
-      e.preventDefault(); // جلوگیری از باز شدن لینک
-      alert("Hey explorer! 🌍 This section is coming soon. Stay tuned!");
+      e.preventDefault();
+      openComingSoon();
     });
   }
 });
-
-
-
