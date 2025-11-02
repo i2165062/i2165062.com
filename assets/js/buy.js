@@ -1,8 +1,21 @@
 // ========================================================
-// i2165062 — BUY PAGE SCRIPT (FINAL VERSION)
+// i2165062 — BUY PAGE SCRIPT (FINAL VERSION WITH hCaptcha)
 // ========================================================
 
+// --- 1️⃣ کنترل کپچا ---
+window.captchaSolved = function () {
+  const btn = document.getElementById("submitBtn");
+  if (btn) btn.disabled = false;
+};
+
+window.captchaExpired = function () {
+  const btn = document.getElementById("submitBtn");
+  if (btn) btn.disabled = true;
+};
+
+// --- 2️⃣ پس از بارگذاری صفحه ---
 document.addEventListener("DOMContentLoaded", () => {
+
   // === عناصر اصلی ===
   const form = document.getElementById("buyForm");
   const trigger = document.getElementById("countryTrigger");
@@ -15,7 +28,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let countries = [];
   let greetingsMap = {};
 
-  // === دریافت داده کشورها از فایل JSON ===
+  // --- 3️⃣ دریافت داده کشورها از JSON ---
   fetch("assets/data/countries.json")
     .then(res => res.json())
     .then(data => {
@@ -24,7 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
     .catch(err => console.error("❌ Error loading countries.json", err));
 
-  // === دریافت پیام‌های خوش‌آمد از فایل JSON ===
+  // --- 4️⃣ دریافت پیام خوش‌آمد از JSON ---
   fetch("assets/data/greetings.json")
     .then(res => res.json())
     .then(data => (greetingsMap = data))
@@ -32,13 +45,13 @@ document.addEventListener("DOMContentLoaded", () => {
       greetingsMap = { default: "Welcome!" };
     });
 
-  // === تابع ساخت ایموجی پرچم از ISO ===
+  // --- 5️⃣ تابع تبدیل ISO Country Code به ایموجی پرچم ---
   const flagEmoji = cc =>
     /^[A-Z]{2}$/.test(cc)
       ? String.fromCodePoint(...[...cc].map(c => 127397 + c.charCodeAt()))
       : "🌍";
 
-  // === ساخت لیست کشورها ===
+  // --- 6️⃣ ساخت لیست کشورها ---
   function renderList(items) {
     listEl.innerHTML = "";
     const frag = document.createDocumentFragment();
@@ -58,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     listEl.appendChild(frag);
   }
 
-  // === باز و بسته کردن پنل کشور ===
+  // --- 7️⃣ باز و بسته کردن پنل کشور ---
   function openPanel() {
     panel.classList.add("open");
     trigger.setAttribute("aria-expanded", "true");
@@ -80,14 +93,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!panel.contains(e.target) && !trigger.contains(e.target)) closePanel();
   });
 
-  // === جستجوی زنده کشورها ===
+  // --- 8️⃣ جستجوی زنده کشورها ---
   search.addEventListener("input", () => {
     const q = search.value.trim().toLowerCase();
     const filtered = countries.filter(c => c.name.toLowerCase().includes(q));
     renderList(filtered);
   });
 
-  // === انتخاب کشور و نمایش toast ===
+  // --- 9️⃣ انتخاب کشور و نمایش پیام خوش‌آمد ---
   function selectCountry({ name, code, lang }) {
     hidden.value = name;
     trigger.querySelector(".country-trigger-text").textContent = name;
@@ -99,20 +112,27 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast(`${flagEmoji(code)} ${phrase}`);
   }
 
-  // === تابع نمایش toast ===
+  // --- 🔟 تابع نمایش Toast ---
   function showToast(message) {
     toast.innerHTML = message;
     toast.classList.add("show");
     setTimeout(() => toast.classList.remove("show"), 3000);
   }
 
-  // === ارسال فرم به Formspree ===
+  // --- 11️⃣ ارسال فرم به Formspree ---
   form.addEventListener("submit", async e => {
     e.preventDefault();
 
     // بررسی انتخاب کشور
     if (!hidden.value) {
       showToast("🌍 Please select your country");
+      return;
+    }
+
+    // بررسی کپچا (حتماً وجود داشته باشد)
+    const captchaResponse = hcaptcha.getResponse();
+    if (!captchaResponse) {
+      showToast("⚠️ Please verify that you are not a robot");
       return;
     }
 
@@ -128,6 +148,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (res.ok) {
         form.reset();
         hidden.value = "";
+        hcaptcha.reset(); // ریست کپچا
+        document.getElementById("submitBtn").disabled = true; // قفل دوباره دکمه
         trigger.querySelector(".country-trigger-flag").textContent = "🌍";
         trigger.querySelector(".country-trigger-text").textContent = "Select your country";
 
