@@ -14,6 +14,7 @@
       We’d love to hear from you — whether you’re an artist, developer, or cultural enthusiast.
     </p>
 
+    <!-- Contact Form -->
     <form
       id="contactForm"
       action="https://formspree.io/f/xgvnggyr"
@@ -46,9 +47,18 @@
         <textarea name="message" rows="5" placeholder="Type your message..." required></textarea>
       </div>
 
+      <!-- ✅ hCaptcha Section -->
+      <div class="form-group captcha-group">
+        <div
+          class="h-captcha"
+          data-sitekey="834c365e-50ac-4f44-a194-1c3684f00cee">
+        </div>
+      </div>
+
       <button type="submit" class="btn-submit">Send Message</button>
     </form>
 
+    <!-- Info Section -->
     <div class="info-section">
       <p><strong>Email:</strong> contact@i2165062.org</p>
       <p><strong>Follow us:</strong></p>
@@ -61,11 +71,16 @@
       <p class="location">🌍 Based in the Middle East • Global Team</p>
     </div>
 
+    <!-- Toast Notification -->
     <div id="toast" class="toast">Message sent successfully!</div>
   </div>
 
   <div class="bg-animation"></div>
 
+  <!-- ✅ hCaptcha Script -->
+  <script src="https://hcaptcha.com/1/api.js" async defer></script>
+
+  <!-- Main Script -->
   <script src="assets/js/contact.js"></script>
 </body>
 </html>
