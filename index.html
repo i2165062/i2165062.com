@@ -4,183 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>i2165062 — Home</title>
-  <style>
-    /* ---------- پایه و تنظیمات کلی ---------- */
-    :root {
-      --ink:#2b2f35;
-      --muted:#777;
-      --line:#d8dade;
-      --bg0:#f7f8f9;
-      --bg1:#eef0f2;
-      --radius:18px;
-    }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body {
-      font-family:"Poppins","Segoe UI",sans-serif;
-      background: radial-gradient(1000px 500px at 50% 0%, var(--bg1), var(--bg0));
-      color: var(--ink);
-      overflow-x: hidden;
-    }
 
-    /* ---------- ساختار اصلی ---------- */
-    .wrap {
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      min-height:100vh;
-      justify-content:flex-start;
-      padding:30px 16px;
-    }
-
-    /* ---------- لوگو و عنوان ---------- */
-    .logo-wrap {
-      text-align:center;
-      margin-bottom:28px;
-    }
-    .logo {
-      width:100px; height:100px; border-radius:50%;
-      background:#3a3f44; display:grid; place-items:center;
-      margin:0 auto 16px auto;
-      box-shadow:inset 0 2px 4px rgba(255,255,255,.08),
-                 0 6px 16px rgba(0,0,0,.25);
-      position:relative;
-    }
-    .logo img {
-      width:80%; height:auto;
-      filter:drop-shadow(0 1px 1px rgba(255,255,255,0.3));
-    }
-    .title {
-      font-size:clamp(22px,3vw,30px);
-      letter-spacing:.08em; font-weight:700;
-    }
-    .tagline {
-      font-size:11px; letter-spacing:.25em; color:var(--muted);
-      margin-top:4px;
-    }
-
-    /* ---------- بخش کارت کشورها ---------- */
-    .rail {
-      display:flex;
-      gap:16px;
-      overflow-x:auto;
-      scroll-snap-type:x mandatory;
-      padding:6px 4px;
-      margin:10px 0 30px;
-      width:min(900px,100%);
-      scrollbar-width:none;
-      -ms-overflow-style:none;
-    }
-    .rail::-webkit-scrollbar{display:none}
-
-    .card {
-      flex:0 0 clamp(200px,22vw,230px);
-      height:clamp(260px,30vw,300px);
-      border-radius:var(--radius);
-      overflow:hidden;
-      position:relative;
-      background:#000;
-      scroll-snap-align:center;
-      transform-style:preserve-3d;
-      transition:transform .3s ease, box-shadow .3s ease;
-      box-shadow:0 8px 20px rgba(0,0,0,0.15);
-      perspective:1000px;
-    }
-
-    /* افکت خمیدگی طبیعی (OLED curve) */
-    .card[data-tilt="left"] {transform:perspective(1000px) rotateY(5deg) rotateZ(-1deg);}
-    .card[data-tilt="right"]{transform:perspective(1000px) rotateY(-5deg) rotateZ(1deg);}
-    .card[data-tilt="center"]{transform:perspective(1000px);}
-    .card:hover{box-shadow:0 18px 40px rgba(0,0,0,0.25);}
-
-    /* تصویر کامل با زوم نرم هنگام Hover */
-    .shot {
-      width:100%; height:100%; object-fit:cover;
-      transition:transform .4s ease;
-    }
-    .card:hover .shot {transform:scale(1.05);}
-
-    /* ---------- لایه‌ی نام کشور ---------- */
-    .overlay {
-      position:absolute;
-      bottom:0; left:0; right:0;
-      height:35%;
-      background:linear-gradient(to top,rgba(0,0,0,0.55),transparent);
-      display:flex; align-items:flex-end; justify-content:center;
-      padding-bottom:14px;
-    }
-    .overlay span {
-      color:#fff; font-size:17px; font-weight:600;
-      letter-spacing:.05em;
-    }
-
-    /* ---------- بازتاب نور دینامیک ---------- */
-    .card::before {
-      content:"";
-      position:absolute;
-      top:0; left:0;
-      width:200%; height:200%;
-      background:radial-gradient(
-        circle at var(--mx,50%) var(--my,30%),
-        rgba(255,255,255,0.6) 0%,
-        rgba(255,255,255,0.2) 15%,
-        rgba(255,255,255,0.0) 60%
-      );
-      opacity:0.35;
-      pointer-events:none;
-      transform:translate(-50%,-50%);
-      filter:blur(15px);
-      transition:opacity 0.4s ease;
-    }
-    .card:hover::before {
-      opacity:0.55;
-      animation:shimmer 2.5s ease-in-out infinite;
-    }
-
-    /* ---------- بازتاب پایین (Soft Mirror) ---------- */
-    .card::after {
-      content:"";
-      position:absolute;
-      bottom:-40%; left:0;
-      width:100%; height:50%;
-      background:linear-gradient(to bottom,rgba(255,255,255,0.05),rgba(0,0,0,0.15));
-      filter:blur(8px);
-      transform:scaleY(-1);
-      opacity:0.2;
-      pointer-events:none;
-    }
-
-    /* ---------- افکت درخشش آرام ---------- */
-    @keyframes shimmer {
-      0%{opacity:0.4;}
-      50%{opacity:0.55;}
-      100%{opacity:0.4;}
-    }
-
-    /* ---------- نوار پایین ---------- */
-    nav {
-      display:flex; flex-wrap:wrap;
-      justify-content:center; gap:16px;
-      border-top:1px solid var(--line);
-      padding-top:16px;
-    }
-    nav a {
-      text-decoration:none; color:var(--ink);
-      font-size:11.5px; letter-spacing:.15em;
-      border:1px solid var(--line);
-      border-radius:999px;
-      padding:6px 12px;
-      background:rgba(255,255,255,.7);
-      transition:background .2s ease;
-    }
-    nav a:hover {background:white;}
-
-    /* ---------- واکنش‌گرا ---------- */
-    @media (max-width:600px){
-      .logo{width:180px;height:180px;}
-      .card{flex:0 0 170px;height:240px;}
-      .overlay span{font-size:15px;}
-    }
-  </style>
+  <!-- ✅ فایل استایل اصلی -->
+  <link rel="stylesheet" href="assets/css/main.css" />
 </head>
 
 <body>
@@ -189,7 +15,7 @@
     <!-- ---------- لوگو و عنوان ---------- -->
     <div class="logo-wrap">
       <div class="logo">
-        <img src="images/pc2.png" alt="i2165062 logo" />
+        <img src="images/pc2.png" alt="i2165062 logo" class="site-logo" />
       </div>
       <h1 class="title">i2165062</h1>
       <div class="tagline">EVERYONE WILL FEEL IT</div>
@@ -197,22 +23,24 @@
 
     <!-- ---------- کارت‌ها ---------- -->
     <div class="rail" id="rail">
-      <a href="irannft.art" class="card" data-tilt="left">
+      <!-- ✅ فقط این لینک فعال است -->
+      <a href="https://irannft.art" target="_blank" class="card" data-tilt="left">
         <img src="images/iran.png" class="shot" alt="Iran" />
         <div class="overlay"><span>Iran</span></div>
       </a>
 
-      <a href="egypt.html" class="card" data-tilt="center">
+      <!-- ✅ سایر کارت‌ها غیرفعال ولی قابل کلیک برای نمایش پیام -->
+      <a href="#" class="card" data-tilt="center">
         <img src="images/egypt.png" class="shot" alt="Egypt" />
         <div class="overlay"><span>Egypt</span></div>
       </a>
 
-      <a href="saudi.html" class="card" data-tilt="center">
+      <a href="#" class="card" data-tilt="center">
         <img src="images/saudi.png" class="shot" alt="Saudi Arabia" />
         <div class="overlay"><span>Saudi Arabia</span></div>
       </a>
 
-      <a href="turkey.html" class="card" data-tilt="right">
+      <a href="#" class="card" data-tilt="right">
         <img src="images/turkey.png" class="shot" alt="Turkey" />
         <div class="overlay"><span>Turkey</span></div>
       </a>
@@ -228,23 +56,7 @@
     </nav>
   </main>
 
-  <!-- ---------- اسکریپت افکت‌ها ---------- -->
-  <script>
-    /* حرکت ماوس برای بازتاب دینامیک */
-    document.querySelectorAll('.card').forEach(card => {
-      card.addEventListener('mousemove', e => {
-        const rect = card.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        card.style.setProperty('--mx', `${x}%`);
-        card.style.setProperty('--my', `${y}%`);
-      });
-      card.addEventListener('mouseleave', () => {
-        card.style.removeProperty('--mx');
-        card.style.removeProperty('--my');
-      });
-    });
-  </script>
+  <!-- ✅ فایل اسکریپت اصلی -->
+  <script src="assets/js/main.js"></script>
 </body>
 </html>
-
