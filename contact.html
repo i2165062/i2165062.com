@@ -47,18 +47,20 @@
         <textarea name="message" rows="5" placeholder="Type your message..." required></textarea>
       </div>
 
-      <!-- ✅ hCaptcha Section -->
+      <!-- ✅ hCaptcha -->
       <div class="form-group captcha-group">
         <div
           class="h-captcha"
-          data-sitekey="834c365e-50ac-4f44-a194-1c3684f00cee">
+          data-sitekey="834c365e-50ac-4f44-a194-1c3684f00cee"
+          data-callback="captchaSolved"
+          data-expired-callback="captchaExpired">
         </div>
       </div>
 
-      <button type="submit" class="btn-submit">Send Message</button>
+      <!-- ✅ Disabled by default -->
+      <button type="submit" id="submitBtn" class="btn-submit" disabled>Send Message</button>
     </form>
 
-    <!-- Info Section -->
     <div class="info-section">
       <p><strong>Email:</strong> contact@i2165062.org</p>
       <p><strong>Follow us:</strong></p>
@@ -71,7 +73,6 @@
       <p class="location">🌍 Based in the Middle East • Global Team</p>
     </div>
 
-    <!-- Toast Notification -->
     <div id="toast" class="toast">Message sent successfully!</div>
   </div>
 
