@@ -1,6 +1,6 @@
 /* =========================================================
    i2165062 — MAIN CSS (Final Responsive OLED Edition)
-   Author: Ali Asadi + ChatGPT
+   Author: Ali Asadi REDBIN
    ========================================================= */
 
 /* ---------- تنظیمات پایه ---------- */
@@ -266,23 +266,22 @@ nav a:hover {
   transform: scale(1.2);
 }
 /* =========================================================
-   ✨ Friendly Coming Soon Modal ✨
+   ✨ Friendly Coming Soon Modal (Glass-Morph)
    ========================================================= */
 .coming-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(0,0,0,.55);
   backdrop-filter: blur(8px);
   display: none;
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  animation: fadeIn 0.3s ease forwards;
 }
 .coming-modal.active { display: flex; }
 
 .coming-box {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 22px;
@@ -290,144 +289,28 @@ nav a:hover {
   text-align: center;
   color: #fff;
   box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  animation: popUp 0.5s ease;
+  animation: popUp 0.45s ease;
+  max-width: 520px;
+  margin: 0 16px;
 }
+.coming-box .emoji { font-size: 40px; margin-bottom: 10px; animation: bounce 2s infinite; }
+.coming-box h2 { font-size: 28px; margin-bottom: 10px; letter-spacing: .04em; }
+.coming-box p { font-size: 15px; opacity: .92; margin-bottom: 22px; line-height: 1.6; }
 
-.coming-box h2 {
-  font-size: 28px;
-  margin-bottom: 10px;
-  letter-spacing: 0.04em;
+.close-btn{
+  background:#00bfa6; color:#fff; border:none; border-radius:50px;
+  padding:10px 24px; font-weight:600; cursor:pointer;
+  transition:background .25s ease, transform .2s ease;
 }
-.coming-box p {
-  font-size: 15px;
-  opacity: 0.9;
-  margin-bottom: 25px;
-  line-height: 1.6;
-}
-.coming-box .emoji {
-  font-size: 40px;
-  margin-bottom: 10px;
-  animation: bounce 2s infinite ease-in-out;
-}
+.close-btn:hover{ background:#00a28c; transform: translateY(-2px); }
 
-.close-btn {
-  background: #00bfa6;
-  color: #fff;
-  border: none;
-  border-radius: 50px;
-  padding: 10px 24px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-.close-btn:hover {
-  background: #00a28c;
-  transform: translateY(-2px);
-}
+@keyframes popUp{ from{ transform: scale(.9); opacity:0; } to{ transform: scale(1); opacity:1; } }
+@keyframes bounce{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-5px);} }
 
-/* انیمیشن‌ها */
-@keyframes popUp {
-  from { transform: scale(0.8); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-@keyframes bounce {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-/* =========================================================
-   📱 Responsive Fixes for Mobile & Tablet
-   ========================================================= */
-
-@media (max-width: 1024px) {
-  .wrap {
-    padding: 24px 10px;
-    justify-content: flex-start;
-  }
-
-  .logo-wrap {
-    margin-bottom: 18px;
-  }
-
-  .rail {
-    width: 100%;
-    justify-content: center;
-    overflow-x: hidden;
-    flex-wrap: wrap;
-    gap: 18px;
-  }
-
-  .card {
-    flex: 0 0 calc(45% - 10px);
-    height: auto;
-    aspect-ratio: 3 / 4;
-    max-width: 230px;
-  }
-}
-
-/* ----------- Small screens (phones) ----------- */
-@media (max-width: 600px) {
-  .wrap {
-    align-items: center;
-    padding: 20px 8px;
-  }
-
-  .logo {
-    width: 120px;
-    height: 120px;
-  }
-
-  .title {
-    font-size: 22px;
-    margin-top: 8px;
-  }
-
-  .rail {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 22px;
-    overflow: visible;
-  }
-
-  .card {
-    width: 90%;
-    height: auto;
-    border-radius: 18px;
-    aspect-ratio: 3 / 4;
-  }
-
-  .overlay span {
-    font-size: 15px;
-  }
-
-  nav {
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-  }
-
-  nav a {
-    width: 80%;
-    text-align: center;
-    font-size: 12px;
-    padding: 8px 0;
-  }
-
-  .coming-box {
-    width: 85%;
-    padding: 28px 20px;
-  }
-
-  .coming-box h2 {
-    font-size: 22px;
-  }
-
-  .coming-box p {
-    font-size: 14px;
-  }
+/* موبایل: جعبه کمی فشرده‌تر */
+@media (max-width: 600px){
+  .coming-box{ width: 88%; padding: 26px 18px; }
+  .coming-box h2{ font-size: 22px; }
+  .coming-box p{ font-size: 14px; }
 }
 
