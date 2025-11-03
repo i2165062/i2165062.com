@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   let greetingsMap = {};
 
   // --- 3️⃣ دریافت داده کشورها از JSON ---
-  fetch("assets/data/countries.json")
+  fetch("../assets/data/countries.json")
     .then(res => res.json())
     .then(data => {
       countries = data;
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .catch(err => console.error("❌ Error loading countries.json", err));
 
   // --- 4️⃣ دریافت پیام خوش‌آمد از JSON ---
-  fetch("assets/data/greetings.json")
+  fetch("../assets/data/greetings.json")
     .then(res => res.json())
     .then(data => (greetingsMap = data))
     .catch(() => {
@@ -181,3 +181,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
