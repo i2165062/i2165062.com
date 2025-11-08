@@ -33,13 +33,6 @@
             appearance: none;
         }
 
-        .captcha-text {
-            text-decoration: line-through;
-            text-decoration-color: #67e8f9;
-            text-decoration-thickness: 2px;
-            font-style: italic;
-        }
-
         @keyframes fade-in {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -71,7 +64,7 @@
             <div class="p-8 bg-black/20 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg animate-fade-in">
                 <div class="text-center mb-8">
                     <h1 class="text-4xl font-bold text-white">i21 Airdrop</h1>
-                    <p class="text-gray-300 mt-2">Join the future. Register now.</p>
+                    <p class="text-gray-300 mt-2">Claim your share of 100 million i21 tokens from a 1 billion total supply.</p>
                 </div>
                 <form id="airdrop-form" action="https://formspree.io/f/xgvnggyr" method="POST" class="space-y-4">
                     <input name="name" type="text" placeholder="Full Name" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300" />
@@ -93,8 +86,8 @@
                     </select>
 
                     <div class="flex items-center justify-between p-3 bg-white/10 border border-white/20 rounded-lg">
-                        <span id="captcha-text" class="text-lg font-mono tracking-widest text-cyan-300 select-none captcha-text"></span>
-                        <input id="captcha-input" type="text" placeholder="Enter CAPTCHA" class="w-1/2 p-2 bg-transparent border-b border-white/30 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
+                        <span id="captcha-text" class="text-lg font-mono tracking-widest text-cyan-300 select-none"></span>
+                        <input id="captcha-input" type="number" placeholder="Answer" class="w-1/2 p-2 bg-transparent border-b border-white/30 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
                     </div>
 
                     <p id="status-message" class="text-red-400 text-sm text-center h-5"></p>
@@ -136,7 +129,7 @@
             const statusMessage = document.getElementById('status-message');
             const submitButton = form.querySelector('button[type="submit"]');
 
-            let currentCaptcha = '';
+            let captchaAnswer = 0;
 
             function populateCountries() {
                 COUNTRIES.forEach(country => {
@@ -149,13 +142,10 @@
             }
 
             function generateCaptcha() {
-                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-                let result = '';
-                for (let i = 0; i < 6; i++) {
-                    result += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                currentCaptcha = result;
-                captchaTextEl.textContent = result;
+                const num1 = Math.floor(Math.random() * 10) + 1;
+                const num2 = Math.floor(Math.random() * 10) + 1;
+                captchaAnswer = num1 + num2;
+                captchaTextEl.textContent = `${num1} + ${num2} = ?`;
             }
 
             function handleGenderChange() {
@@ -176,8 +166,8 @@
                 event.preventDefault();
                 statusMessage.textContent = '';
 
-                if (captchaInput.value.toLowerCase() !== currentCaptcha.toLowerCase()) {
-                    statusMessage.textContent = 'CAPTCHA was incorrect. Please try again.';
+                if (parseInt(captchaInput.value, 10) !== captchaAnswer) {
+                    statusMessage.textContent = 'Incorrect answer. Please try again.';
                     generateCaptcha();
                     captchaInput.value = '';
                     return;
