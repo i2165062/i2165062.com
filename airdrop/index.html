@@ -1,0 +1,222 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>i21 Airdrop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        #main-container {
+            transition: background 1s ease-in-out;
+        }
+
+        .bg-default { background: linear-gradient(135deg, #1a202c, #2d3748); }
+        .bg-male { background: linear-gradient(135deg, #1e3a8a, #06b6d4); }
+        .bg-female { background: linear-gradient(135deg, #581c87, #db2777); }
+        .bg-other { background: linear-gradient(135deg, #047857, #34d399); }
+
+        .custom-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%239ca3af' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        .captcha-text {
+            text-decoration: line-through;
+            text-decoration-color: #67e8f9;
+            text-decoration-thickness: 2px;
+            font-style: italic;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in {
+            animation: fade-in 0.6s ease-out forwards;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900">
+
+    <main id="main-container" class="relative min-h-screen w-full flex items-center justify-center p-4 overflow-hidden bg-default">
+        <!-- Wavy Background SVGs -->
+        <div class="absolute top-0 left-0 w-full h-full z-0 overflow-hidden">
+            <svg class="absolute bottom-0 left-0 w-full h-auto text-white/5" viewBox="0 0 1440 320">
+                <path fill="currentColor" fill-opacity="1" d="M0,160L48,181.3C96,203,192,245,288,256C384,267,480,245,576,213.3C672,181,768,139,864,138.7C960,139,1056,181,1152,192C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+            <svg class="absolute bottom-0 left-0 w-full h-auto text-white/10" viewBox="0 0 1440 320" style="transform: scaleX(-1)">
+                <path fill="currentColor" fill-opacity="1" d="M0,224L40,208C80,192,160,160,240,170.7C320,181,400,235,480,250.7C560,267,640,245,720,208C800,171,880,117,960,106.7C1040,96,1120,128,1200,160C1280,192,1360,224,1400,240L1440,256L1440,320L1400,320C1360,320,1280,320,1200,320C1120,320,1040,320,960,320C880,320,800,320,720,320C640,320,560,320,480,320C400,320,320,320,240,320C160,320,80,320,40,320L0,320Z"></path>
+            </svg>
+        </div>
+
+        <!-- Form Container -->
+        <div id="form-container" class="relative z-10 w-full max-w-md">
+            <div class="p-8 bg-black/20 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg animate-fade-in">
+                <div class="text-center mb-8">
+                    <h1 class="text-4xl font-bold text-white">i21 Airdrop</h1>
+                    <p class="text-gray-300 mt-2">Join the future. Register now.</p>
+                </div>
+                <form id="airdrop-form" action="https://formspree.io/f/xgvnggyr" method="POST" class="space-y-4">
+                    <input name="name" type="text" placeholder="Full Name" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300" />
+                    <input name="email" type="email" placeholder="Email Address" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300" />
+                    <select id="country-select" name="country" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 custom-select">
+                        <option value="" disabled selected class="bg-gray-800">Select Country</option>
+                    </select>
+                    <select name="userType" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 custom-select">
+                        <option value="" disabled selected class="bg-gray-800">Select User Type</option>
+                        <option value="Regular User" class="bg-gray-800">Regular User</option>
+                        <option value="Investor" class="bg-gray-800">Investor</option>
+                        <option value="Builder" class="bg-gray-800">Builder</option>
+                    </select>
+                    <select id="gender-select" name="gender" required class="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all duration-300 custom-select">
+                        <option value="" disabled selected class="bg-gray-800">Select Gender</option>
+                        <option value="Male" class="bg-gray-800">Male</option>
+                        <option value="Female" class="bg-gray-800">Female</option>
+                        <option value="Other" class="bg-gray-800">Other</option>
+                    </select>
+
+                    <div class="flex items-center justify-between p-3 bg-white/10 border border-white/20 rounded-lg">
+                        <span id="captcha-text" class="text-lg font-mono tracking-widest text-cyan-300 select-none captcha-text"></span>
+                        <input id="captcha-input" type="text" placeholder="Enter CAPTCHA" class="w-1/2 p-2 bg-transparent border-b border-white/30 text-white placeholder-gray-400 focus:outline-none focus:border-indigo-500" />
+                    </div>
+
+                    <p id="status-message" class="text-red-400 text-sm text-center h-5"></p>
+
+                    <button type="submit" class="w-full py-3 px-4 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors duration-300 shadow-lg">
+                        Claim Airdrop
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="relative z-10 hidden">
+            <div class="flex flex-col items-center justify-center p-8 bg-black/20 backdrop-blur-xl border border-white/20 rounded-2xl shadow-lg max-w-md mx-auto text-center text-white animate-fade-in">
+                <svg class="w-16 h-16 text-green-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <h2 class="text-2xl font-bold mb-2">Submission Successful!</h2>
+                <p class="text-gray-300 mb-6">Thank you for participating in the i21 airdrop. We have received your information.</p>
+                <a href="https://i2165062.com/" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition-colors duration-300 shadow-md">
+                    Go to Main Page
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const COUNTRIES = [ 'United States', 'Canada', 'Mexico', 'United Kingdom', 'Germany', 'France', 'Spain', 'Italy', 'Australia', 'Brazil', 'Argentina', 'Japan', 'China', 'India', 'South Korea', 'Russia', 'South Africa', 'Nigeria', 'Egypt', 'Turkey', 'Iran', 'Saudi Arabia', 'United Arab Emirates', 'Vietnam', 'Indonesia', 'Pakistan', 'Netherlands', 'Switzerland', 'Sweden', 'Other' ];
+
+            const mainContainer = document.getElementById('main-container');
+            const genderSelect = document.getElementById('gender-select');
+            const countrySelect = document.getElementById('country-select');
+            const form = document.getElementById('airdrop-form');
+            const captchaTextEl = document.getElementById('captcha-text');
+            const captchaInput = document.getElementById('captcha-input');
+            const formContainer = document.getElementById('form-container');
+            const successModal = document.getElementById('success-modal');
+            const statusMessage = document.getElementById('status-message');
+            const submitButton = form.querySelector('button[type="submit"]');
+
+            let currentCaptcha = '';
+
+            function populateCountries() {
+                COUNTRIES.forEach(country => {
+                    const option = document.createElement('option');
+                    option.value = country;
+                    option.textContent = country;
+                    option.classList.add('bg-gray-800');
+                    countrySelect.appendChild(option);
+                });
+            }
+
+            function generateCaptcha() {
+                const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+                let result = '';
+                for (let i = 0; i < 6; i++) {
+                    result += chars.charAt(Math.floor(Math.random() * chars.length));
+                }
+                currentCaptcha = result;
+                captchaTextEl.textContent = result;
+            }
+
+            function handleGenderChange() {
+                const gender = genderSelect.value;
+                mainContainer.classList.remove('bg-default', 'bg-male', 'bg-female', 'bg-other');
+                if (gender === 'Male') {
+                    mainContainer.classList.add('bg-male');
+                } else if (gender === 'Female') {
+                    mainContainer.classList.add('bg-female');
+                } else if (gender === 'Other') {
+                    mainContainer.classList.add('bg-other');
+                } else {
+                    mainContainer.classList.add('bg-default');
+                }
+            }
+
+            async function handleSubmit(event) {
+                event.preventDefault();
+                statusMessage.textContent = '';
+
+                if (captchaInput.value.toLowerCase() !== currentCaptcha.toLowerCase()) {
+                    statusMessage.textContent = 'CAPTCHA was incorrect. Please try again.';
+                    generateCaptcha();
+                    captchaInput.value = '';
+                    return;
+                }
+
+                submitButton.disabled = true;
+                submitButton.textContent = 'Submitting...';
+
+                const formData = new FormData(form);
+                
+                try {
+                    const response = await fetch(form.action, {
+                        method: form.method,
+                        body: formData,
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        formContainer.classList.add('hidden');
+                        successModal.classList.remove('hidden');
+                    } else {
+                        throw new Error('Form submission failed');
+                    }
+                } catch (error) {
+                    statusMessage.textContent = 'Something went wrong. Please try again later.';
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Claim Airdrop';
+                }
+            }
+
+            genderSelect.addEventListener('change', handleGenderChange);
+            form.addEventListener('submit', handleSubmit);
+            
+            populateCountries();
+            generateCaptcha();
+        });
+    </script>
+
+</body>
+</html>
