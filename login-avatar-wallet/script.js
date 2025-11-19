@@ -137,41 +137,68 @@ function updateCharacter() {
 
 // ==== WALLET CONNECT ====
 
+// نوع کیف پول برای آینده (مثلا اگر خواستی رفتارها فرق کند)
+userData.walletType = null;
+
 async function connectWallet() {
-  if (!window.ethereum) {
-    alert('No wallet detected. Please install MetaMask or another Web3 wallet.');
+  const hasEvm = typeof window.ethereum !== 'undefined';
+  const hasPhantom = typeof window.solana !== 'undefined' && window.solana.isPhantom;
+
+  if (!hasEvm && !hasPhantom) {
+    alert('No wallet detected. Please install MetaMask (EVM) or Phantom (Solana).');
     return;
   }
 
   try {
-    const accounts = await window.ethereum.request({
-      method: 'eth_requestAccounts',
-    });
+    // 1) اول تلاش برای کیف‌های EVM (MetaMask و مشابه‌اش)
+    if (hasEvm) {
+      const accounts = await window.ethereum.request({
+        method: 'eth_requestAccounts',
+      });
 
-    if (!accounts || accounts.length === 0) {
-      alert('No accounts returned from wallet.');
+      if (accounts && accounts.length > 0) {
+        const address = accounts[0];
+        userData.walletAddress = address;
+        userData.walletType = 'evm';
+
+        walletAddressSpan.textContent = shortenAddress(address);
+        walletAddressSpan.title = address;
+
+        // اگر پروفایلی برای این والت ذخیره شده، آن را لود کن
+        loadProfileForWallet(address);
+        return;
+      }
+    }
+
+    // 2) اگر EVM نشد، دنبال Phantom بگرد
+    if (hasPhantom) {
+      const resp = await window.solana.connect(); // پنجره Phantom باز می‌شود
+      const address = resp.publicKey.toString();
+
+      userData.walletAddress = address;
+      userData.walletType = 'solana';
+
+      walletAddressSpan.textContent = address.slice(0, 4) + '...' + address.slice(-4);
+      walletAddressSpan.title = address;
+
+      // می‌توانی برای سولانا هم از همان localStorage استفاده کنی
+      loadProfileForWallet(address);
       return;
     }
 
-    const address = accounts[0];
-    userData.walletAddress = address;
-
-    walletAddressSpan.textContent = shortenAddress(address);
-    walletAddressSpan.title = address;
-
-    // اگر قبلا پروفایلی برای این والت داشتیم، لودش کن
-    loadProfileForWallet(address);
+    alert('Could not get an address from any wallet.');
   } catch (err) {
     console.error('Wallet error:', err);
 
     if (err.code === 4001) {
-      // کاربر خودِ متامسک رو Cancel کرده
-      alert('Wallet connection was rejected in MetaMask.');
+      alert('Wallet connection was rejected in the wallet popup.');
     } else {
       alert('Wallet error: ' + (err.message || 'Unknown error'));
     }
   }
 }
+
+connectWalletBtn.addEventListener('click', connectWallet);
 
 
 // ==== FORMSPREE SUBMIT ====
