@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Signup + Character + Wallet Connect</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app">
+
+    <!-- STEP 1: SIGNUP -->
+    <section class="step step-1 active" id="step-1">
+      <div class="card">
+        <h1>Create Your Account</h1>
+        <p class="subtitle">Step 1 of 2 – Basic Information</p>
+
+        <form id="signupForm">
+          <div class="field">
+            <label for="username">Username</label>
+            <input id="username" name="username" type="text" required />
+          </div>
+
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required />
+          </div>
+
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required />
+          </div>
+
+          <button type="submit" class="primary-btn">
+            Continue to Character
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- STEP 2: CHARACTER + WALLET -->
+    <section class="step step-2" id="step-2">
+      <div class="card card-wide">
+        <header class="card-header">
+          <div>
+            <h1>Build Your Character</h1>
+            <p class="subtitle">Step 2 of 2 – Customize your avatar</p>
+          </div>
+
+          <div class="wallet-area">
+            <button class="secondary-btn" id="connectWallet">
+              🔗 Connect Wallet
+            </button>
+            <span id="walletAddress" class="wallet-address">Not connected</span>
+            <button class="secondary-btn" id="backToSignup">⬅ Back</button>
+          </div>
+        </header>
+
+        <div class="builder-layout">
+
+          <!-- LEFT: CONTROLS -->
+          <div class="controls">
+            <h2>Appearance</h2>
+
+            <div class="field">
+              <label for="eyeColor">Eye color</label>
+              <select id="eyeColor">
+                <option value="#2c3e50">Dark</option>
+                <option value="#1e90ff">Blue</option>
+                <option value="#27ae60">Green</option>
+                <option value="#f1c40f">Amber</option>
+                <option value="#ffffff">Light</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="hairColor">Hair color</label>
+              <select id="hairColor">
+                <option value="#2c3e50">Black</option>
+                <option value="#8e5a2b">Brown</option>
+                <option value="#d4a15a">Blonde</option>
+                <option value="#c0392b">Red</option>
+                <option value="#ecf0f1">White / Silver</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="bodyColor">Body / outfit color</label>
+              <select id="bodyColor">
+                <option value="#3498db">Blue</option>
+                <option value="#9b59b6">Purple</option>
+                <option value="#27ae60">Green</option>
+                <option value="#e67e22">Orange</option>
+                <option value="#e74c3c">Red</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="animationStyle">Animation</label>
+              <select id="animationStyle">
+                <option value="none">None</option>
+                <option value="bounce">Bounce</option>
+                <option value="wave">Wave</option>
+                <option value="float">Float</option>
+              </select>
+            </div>
+
+            <button class="primary-btn" id="saveCharacter">
+              Save Profile for this Wallet
+            </button>
+
+            <p id="saveMessage" class="save-message" aria-live="polite"></p>
+          </div>
+
+          <!-- RIGHT: PREVIEW -->
+          <div class="preview">
+            <div class="preview-card">
+              <h2>Live Preview</h2>
+
+              <div id="characterWrapper" class="character-wrapper">
+                <div class="character" id="character">
+                  <div class="head">
+                    <div class="hair"></div>
+                    <div class="face">
+                      <span class="eye eye-left"></span>
+                      <span class="eye eye-right"></span>
+                      <span class="mouth"></span>
+                    </div>
+                  </div>
+                  <div class="body">
+                    <div class="arm arm-left"></div>
+                    <div class="torso"></div>
+                    <div class="arm arm-right"></div>
+                  </div>
+                  <div class="legs">
+                    <div class="leg leg-left"></div>
+                    <div class="leg leg-right"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="user-summary">
+                <p><strong>User:</strong> <span id="summaryUsername">–</span></p>
+                <p><strong>Email:</strong> <span id="summaryEmail">–</span></p>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
