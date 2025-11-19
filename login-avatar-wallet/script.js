@@ -166,46 +166,7 @@ connectWalletBtn.addEventListener('click', connectWallet);
 
 // ==== FORMSPREE SUBMIT ====
 
-async function submitToFormspree() {
-  // ساخت payload برای Formspree
-  const payload = {
-    username: userData.username,
-    email: userData.email,
-    walletAddress: userData.walletAddress || 'not_connected',
-    eyeColor: userData.character.eyeColor,
-    hairColor: userData.character.hairColor,
-    bodyColor: userData.character.bodyColor,
-    animation: userData.character.animation,
-    submittedAt: new Date().toISOString(),
-  };
 
-  try {
-    const res = await fetch(FORMSPREE_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!res.ok) {
-      console.error('Formspree error', res.status);
-      return false;
-    }
-
-    const data = await res.json().catch(() => ({}));
-    if (data.ok === false) {
-      console.error('Formspree response', data);
-      return false;
-    }
-
-    return true;
-  } catch (e) {
-    console.error('Formspree exception', e);
-    return false;
-  }
-}
 
 // ==== STEP 1: SIGNUP HANDLER ====
 
@@ -255,52 +216,15 @@ animationStyleSelect.addEventListener('change', () => {
 
 // ==== SAVE BUTTON (LOCAL + FORMSPREE) ====
 
-saveBtn.addEventListener('click', async () => {
-  const address = userData.walletAddress;
-
-  if (!address) {
-    saveMessage.textContent = 'Please connect your wallet first.';
-    saveMessage.style.color = '#e67e22';
-    setTimeout(() => {
-      saveMessage.textContent = '';
-    }, 2500);
-    return;
-  }
-
-  // اول localStorage
-  const okLocal = saveProfileForWallet(address);
-
-  // بعد Formspree
-  saveMessage.textContent = 'Saving profile...';
-  saveMessage.style.color = '#9aa3b7';
-
-  const okForm = await submitToFormspree();
-
-  if (okLocal && okForm) {
-    saveMessage.textContent = 'Profile saved & sent successfully ✅';
-    saveMessage.style.color = '#27ae60';
-  } else if (okLocal && !okForm) {
-    saveMessage.textContent = 'Saved locally, but could not send to server.';
-    saveMessage.style.color = '#e67e22';
-  } else if (!okLocal && okForm) {
-    saveMessage.textContent = 'Sent to server, but could not save locally.';
-    saveMessage.style.color = '#e67e22';
-  } else {
-    saveMessage.textContent = 'Could not save profile.';
-    saveMessage.style.color = '#e74c3c';
-  }
-
-  setTimeout(() => {
-    saveMessage.textContent = '';
-  }, 3000);
-});
 
 // ==== INIT ====
 updateCharacter();
 
 // ==== SAVE BUTTON (LOCAL + FORMSPREE + REDIRECT) ====
 
-saveBtn.addEventListener('click', async () => {
+// ==== SAVE BUTTON (ONLY LOCAL + REDIRECT TO GAME) ====
+
+saveBtn.addEventListener('click', () => {
   const address = userData.walletAddress;
 
   if (!address) {
@@ -312,41 +236,28 @@ saveBtn.addEventListener('click', async () => {
     return;
   }
 
-  // 1) ذخیره در localStorage
+  // 1) ذخیره پروفایل در localStorage (بر اساس آدرس والت)
   const okLocal = saveProfileForWallet(address);
 
-  // 2) ذخیره پیام موقت
-  saveMessage.textContent = 'Saving profile...';
-  saveMessage.style.color = '#9aa3b7';
-
-  // 3) ارسال به Formspree
-  const okForm = await submitToFormspree();
-
-  // 4) وضعیت ذخیره‌سازی
-  if (okLocal && okForm) {
-    saveMessage.textContent = 'Profile saved & sent successfully! Redirecting...';
-    saveMessage.style.color = '#27ae60';
-
-    // ذخیره کاراکتر فعلی برای صفحه game.html
-    localStorage.setItem("currentCharacter", JSON.stringify(userData.character));
-
-    // 5) هدایت به محیط بازی بعد از 1.2 ثانیه
-    setTimeout(() => {
-      window.location.href = 'game.html';
-    }, 1200);
-
-  } else if (okLocal && !okForm) {
-    saveMessage.textContent = 'Saved locally, but server failed.';
-    saveMessage.style.color = '#e67e22';
-  } else if (!okLocal && okForm) {
-    saveMessage.textContent = 'Sent to server, but local storage failed.';
-    saveMessage.style.color = '#e67e22';
-  } else {
-    saveMessage.textContent = 'Could not save profile.';
+  if (!okLocal) {
+    saveMessage.textContent = 'Could not save profile locally.';
     saveMessage.style.color = '#e74c3c';
+    setTimeout(() => {
+      saveMessage.textContent = '';
+    }, 2500);
+    return;
   }
 
+  // 2) ذخیره ظاهر کاراکتر برای دنیای 3D
+  localStorage.setItem('currentCharacter', JSON.stringify(userData.character));
+
+  // 3) پیام خوب برای کاربر
+  saveMessage.textContent = 'Profile saved locally. Loading world...';
+  saveMessage.style.color = '#27ae60';
+
+  // 4) هدایت به صفحه بازی
   setTimeout(() => {
-    saveMessage.textContent = '';
-  }, 3000);
+    window.location.href = 'game.html';
+  }, 800);
 });
+
