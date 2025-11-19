@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Character Playground 3D</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="game-body">
+  <main class="game-shell">
+    <!-- HUD بالا -->
+    <header class="game-hud">
+      <div class="game-title">Character Playground 3D</div>
+      <div class="game-info">
+        <span id="hudUsername" class="hud-pill"></span>
+        <span id="hudWallet" class="hud-pill"></span>
+        <button class="secondary-btn hud-exit" onclick="window.location.href='index.html'">
+          Exit
+        </button>
+      </div>
+    </header>
+
+    <!-- دنیای سه‌بعدی -->
+    <section class="game-world-3d">
+      <div id="threeContainer" class="three-container"></div>
+    </section>
+
+    <footer class="game-help">
+      <span>
+        ▶ Use <strong>W / A / S / D</strong> or <strong>Arrow keys</strong> to move •
+        <strong>Space</strong> to jump
+      </span>
+    </footer>
+  </main>
+
+  <!-- Three.js از CDN -->
+  <script src="https://unpkg.com/three@0.164.0/build/three.min.js"></script>
+
+  <!-- اسکریپت دنیای سه‌بعدی -->
+  <script src="game.js"></script>
+</body>
+</html>
