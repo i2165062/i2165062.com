@@ -584,7 +584,7 @@ select:focus {
   overflow: hidden;
   margin-top: 0;
   box-shadow: none;
-  background: #cfe7ff;
+  background: #000;
   display: flex;
 }
 
