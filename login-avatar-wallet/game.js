@@ -1,11 +1,17 @@
-// game.js – 3D third-person prototype with Three.js
+// game.js – 3D third-person prototype with Three.js (debug-friendly)
 
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('threeContainer');
   const hudUsername = document.getElementById('hudUsername');
   const hudWallet = document.getElementById('hudWallet');
 
-  // ---------- 1) HUD: load username & wallet ----------
+  if (!container) {
+    console.error('threeContainer element not found in DOM.');
+    return;
+  }
+
+  // ---------- 1) HUD: username + wallet ----------
+
   try {
     const profilesRaw = localStorage.getItem('profiles_by_wallet_v1');
     if (profilesRaw) {
@@ -25,33 +31,32 @@ document.addEventListener('DOMContentLoaded', () => {
       hudWallet.textContent = 'No wallet';
     }
   } catch (e) {
+    console.warn('Error reading profiles_by_wallet_v1', e);
     hudUsername.textContent = 'Player';
     hudWallet.textContent = 'No wallet';
   }
 
-  // ---------- 2) Helper: get proper size (fallback if 0) ----------
+  // ---------- 2) Helper to get size ----------
+
   function getSize() {
     const rect = container.getBoundingClientRect();
     let width = rect.width;
     let height = rect.height;
 
-    if (!width || width < 10) {
-      width = window.innerWidth;
-    }
-    if (!height || height < 10) {
-      height = window.innerHeight - 80; // حدوداً ارتفاع HUD را کم می‌کنیم
-    }
+    if (!width || width < 10) width = window.innerWidth;
+    if (!height || height < 10) height = window.innerHeight - 80;
+
     return { width, height };
   }
 
-  // ---------- 3) Three.js basic setup ----------
-
-  const scene = new THREE.Scene();
-  scene.fog = new THREE.Fog(0xcfe7ff, 30, 120);
-
   const { width: initW, height: initH } = getSize();
 
-  const camera = new THREE.PerspectiveCamera(60, initW / initH, 0.1, 200);
+  // ---------- 3) Three.js setup ----------
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.Fog(0xcfe7ff, 30, 140);
+
+  const camera = new THREE.PerspectiveCamera(60, initW / initH, 0.1, 300);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setSize(initW, initH);
@@ -66,16 +71,16 @@ document.addEventListener('DOMContentLoaded', () => {
   scene.add(hemiLight);
 
   const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-  dirLight.position.set(20, 30, 10);
+  dirLight.position.set(30, 40, 20);
   dirLight.castShadow = true;
-  dirLight.shadow.mapSize.set(2048, 2048);
+  dirLight.shadow.mapSize.set(1024, 1024);
   dirLight.shadow.camera.near = 1;
-  dirLight.shadow.camera.far = 80;
+  dirLight.shadow.camera.far = 120;
   scene.add(dirLight);
 
   // ---------- 5) Ground ----------
 
-  const groundGeo = new THREE.PlaneGeometry(200, 200);
+  const groundGeo = new THREE.PlaneGeometry(400, 400);
   const groundMat = new THREE.MeshStandardMaterial({
     color: 0x8ecf74,
     roughness: 0.9,
@@ -88,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ---------- 6) Sky dome ----------
 
-  const skyGeo = new THREE.SphereGeometry(120, 32, 24);
+  const skyGeo = new THREE.SphereGeometry(200, 32, 24);
   const skyMat = new THREE.MeshBasicMaterial({
     color: 0xcfe7ff,
     side: THREE.BackSide,
@@ -96,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sky = new THREE.Mesh(skyGeo, skyMat);
   scene.add(sky);
 
-  // ---------- 7) Player ----------
+  // ---------- 7) Player (simple avatar) ----------
 
   let bodyColor = '#3498db';
   let hairColor = '#2c3e50';
@@ -115,6 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const player = new THREE.Group();
   scene.add(player);
 
+  // body
   const bodyGeo = new THREE.CapsuleGeometry(0.5, 1.4, 8, 16);
   const bodyMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(bodyColor),
@@ -126,6 +132,7 @@ document.addEventListener('DOMContentLoaded', () => {
   body.position.y = 1.3;
   player.add(body);
 
+  // head
   const headGeo = new THREE.SphereGeometry(0.45, 16, 16);
   const headMat = new THREE.MeshStandardMaterial({
     color: 0xf5d1b5,
@@ -136,7 +143,16 @@ document.addEventListener('DOMContentLoaded', () => {
   head.position.y = 2.4;
   player.add(head);
 
-  const hairGeo = new THREE.SphereGeometry(0.47, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2);
+  // hair
+  const hairGeo = new THREE.SphereGeometry(
+    0.47,
+    16,
+    12,
+    0,
+    Math.PI * 2,
+    0,
+    Math.PI / 2
+  );
   const hairMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(hairColor),
     roughness: 0.5,
@@ -148,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   player.position.set(0, 0, 0);
 
-  // ---------- 8) Camera (third-person) ----------
+  // ---------- 8) Camera (third person) ----------
 
   const cameraOffset = new THREE.Vector3(0, 4, 8);
   camera.position.copy(player.position).add(cameraOffset);
@@ -204,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const delta = (now - lastTime) / 1000;
     lastTime = now;
 
+    // movement
     const moveVector = new THREE.Vector3();
     if (keys.forward) moveVector.z -= 1;
     if (keys.backward) moveVector.z += 1;
@@ -218,17 +235,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const isMoving = moveVector.lengthSq() > 0;
-    const horizontalSpeed = isMoving ? moveSpeed : 0;
-
     if (isMoving) {
-      player.position.x += playerDirection.x * horizontalSpeed * delta;
-      player.position.z += playerDirection.z * horizontalSpeed * delta;
+      player.position.x += playerDirection.x * moveSpeed * delta;
+      player.position.z += playerDirection.z * moveSpeed * delta;
     }
 
-    const limit = 40;
+    const limit = 60;
     player.position.x = Math.max(-limit, Math.min(limit, player.position.x));
     player.position.z = Math.max(-limit, Math.min(limit, player.position.z));
 
+    // jump + gravity
     const isOnGround = player.position.y <= floorHeight + 0.01;
     if (isOnGround) {
       player.position.y = floorHeight;
@@ -244,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
       velocityY = 0;
     }
 
+    // camera follow
     const desiredCameraPos = player.position
       .clone()
       .add(
@@ -261,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   animate();
 
-  // ---------- 11) Resize handling ----------
+  // ---------- 11) Resize ----------
 
   window.addEventListener('resize', () => {
     const { width, height } = getSize();
