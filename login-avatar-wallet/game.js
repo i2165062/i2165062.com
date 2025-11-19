@@ -5,8 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const hudUsername = document.getElementById('hudUsername');
   const hudWallet = document.getElementById('hudWallet');
 
-  // --- 1) HUD: load username & wallet from localStorage (اختیاری ولی باکلاس 😎) ---
-
+  // ---------- 1) HUD: load username & wallet ----------
   try {
     const profilesRaw = localStorage.getItem('profiles_by_wallet_v1');
     if (profilesRaw) {
@@ -30,26 +29,38 @@ document.addEventListener('DOMContentLoaded', () => {
     hudWallet.textContent = 'No wallet';
   }
 
-  // --- 2) Three.js basic setup ---
+  // ---------- 2) Helper: get proper size (fallback if 0) ----------
+  function getSize() {
+    const rect = container.getBoundingClientRect();
+    let width = rect.width;
+    let height = rect.height;
+
+    if (!width || width < 10) {
+      width = window.innerWidth;
+    }
+    if (!height || height < 10) {
+      height = window.innerHeight - 80; // حدوداً ارتفاع HUD را کم می‌کنیم
+    }
+    return { width, height };
+  }
+
+  // ---------- 3) Three.js basic setup ----------
 
   const scene = new THREE.Scene();
   scene.fog = new THREE.Fog(0xcfe7ff, 30, 120);
 
-  const camera = new THREE.PerspectiveCamera(
-    60,
-    container.clientWidth / container.clientHeight,
-    0.1,
-    200
-  );
+  const { width: initW, height: initH } = getSize();
+
+  const camera = new THREE.PerspectiveCamera(60, initW / initH, 0.1, 200);
 
   const renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
+  renderer.setSize(initW, initH);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
 
-  // --- 3) Lights ---
+  // ---------- 4) Lights ----------
 
   const hemiLight = new THREE.HemisphereLight(0xddeeff, 0x668866, 0.9);
   scene.add(hemiLight);
@@ -62,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   dirLight.shadow.camera.far = 80;
   scene.add(dirLight);
 
-  // --- 4) Ground (چمن ساده) ---
+  // ---------- 5) Ground ----------
 
   const groundGeo = new THREE.PlaneGeometry(200, 200);
   const groundMat = new THREE.MeshStandardMaterial({
@@ -75,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ground.receiveShadow = true;
   scene.add(ground);
 
-  // --- 5) Sky dome (آسمان نرم) ---
+  // ---------- 6) Sky dome ----------
 
   const skyGeo = new THREE.SphereGeometry(120, 32, 24);
   const skyMat = new THREE.MeshBasicMaterial({
@@ -85,9 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const sky = new THREE.Mesh(skyGeo, skyMat);
   scene.add(sky);
 
-  // --- 6) Player (کاراکتر سوم‌شخص ساده) ---
+  // ---------- 7) Player ----------
 
-  // رنگ‌هایی که کاربر انتخاب کرده
   let bodyColor = '#3498db';
   let hairColor = '#2c3e50';
 
@@ -102,11 +112,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // گروه بازیکن
   const player = new THREE.Group();
   scene.add(player);
 
-  // بدن (استوانه)
   const bodyGeo = new THREE.CapsuleGeometry(0.5, 1.4, 8, 16);
   const bodyMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(bodyColor),
@@ -118,7 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
   body.position.y = 1.3;
   player.add(body);
 
-  // سر (کُره)
   const headGeo = new THREE.SphereGeometry(0.45, 16, 16);
   const headMat = new THREE.MeshStandardMaterial({
     color: 0xf5d1b5,
@@ -129,7 +136,6 @@ document.addEventListener('DOMContentLoaded', () => {
   head.position.y = 2.4;
   player.add(head);
 
-  // مو (نیم‌کُره)
   const hairGeo = new THREE.SphereGeometry(0.47, 16, 12, 0, Math.PI * 2, 0, Math.PI / 2);
   const hairMat = new THREE.MeshStandardMaterial({
     color: new THREE.Color(hairColor),
@@ -140,16 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {
   hair.position.y = 2.55;
   player.add(hair);
 
-  // موقعیت اولیه بازیکن
   player.position.set(0, 0, 0);
 
-  // --- 7) Camera setup (سوم شخص) ---
+  // ---------- 8) Camera (third-person) ----------
 
-  const cameraOffset = new THREE.Vector3(0, 4, 8); // بالا و پشت سر کاراکتر
+  const cameraOffset = new THREE.Vector3(0, 4, 8);
   camera.position.copy(player.position).add(cameraOffset);
   camera.lookAt(player.position);
 
-  // --- 8) Movement & physics ---
+  // ---------- 9) Movement & physics ----------
 
   const keys = {
     forward: false,
@@ -160,13 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   let velocityY = 0;
-  const moveSpeed = 6; // سرعت حرکت
+  const moveSpeed = 6;
   const rotationSpeed = 6;
   const gravity = -18;
   const jumpStrength = 8;
   const floorHeight = 0;
-
-  // جهت نگاه / حرکت (روی محور XZ)
   let playerDirection = new THREE.Vector3(0, 0, -1);
 
   function onKeyDown(e) {
@@ -190,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('keydown', onKeyDown);
   window.addEventListener('keyup', onKeyUp);
 
-  // --- 9) Animation loop ---
+  // ---------- 10) Animation loop ----------
 
   let lastTime = performance.now();
 
@@ -201,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const delta = (now - lastTime) / 1000;
     lastTime = now;
 
-    // محاسبه جهت حرکت
     const moveVector = new THREE.Vector3();
     if (keys.forward) moveVector.z -= 1;
     if (keys.backward) moveVector.z += 1;
@@ -210,30 +212,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (moveVector.lengthSq() > 0) {
       moveVector.normalize();
-      // جهت نگاه کاراکتر را به سمت حرکت بچرخان
       playerDirection.lerp(moveVector, rotationSpeed * delta);
       const angle = Math.atan2(playerDirection.x, playerDirection.z);
       player.rotation.y = angle;
     }
 
-    // حرکت روی زمین
-    const horizontalSpeed = moveVector.length() > 0 ? moveSpeed : 0;
-    player.position.x += playerDirection.x * horizontalSpeed * delta * (moveVector.length() > 0 ? 1 : 0);
-    player.position.z += playerDirection.z * horizontalSpeed * delta * (moveVector.length() > 0 ? 1 : 0);
+    const isMoving = moveVector.lengthSq() > 0;
+    const horizontalSpeed = isMoving ? moveSpeed : 0;
 
-    // محدود کردن محوطه
+    if (isMoving) {
+      player.position.x += playerDirection.x * horizontalSpeed * delta;
+      player.position.z += playerDirection.z * horizontalSpeed * delta;
+    }
+
     const limit = 40;
     player.position.x = Math.max(-limit, Math.min(limit, player.position.x));
     player.position.z = Math.max(-limit, Math.min(limit, player.position.z));
 
-    // پرش و گرانش
     const isOnGround = player.position.y <= floorHeight + 0.01;
     if (isOnGround) {
       player.position.y = floorHeight;
       velocityY = 0;
-      if (keys.jump) {
-        velocityY = jumpStrength;
-      }
+      if (keys.jump) velocityY = jumpStrength;
     } else {
       velocityY += gravity * delta;
     }
@@ -244,10 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
       velocityY = 0;
     }
 
-    // دوربین پشت سر کاراکتر – با کمی نرمی
     const desiredCameraPos = player.position
       .clone()
-      .add(new THREE.Vector3(0, 3, 7).applyAxisAngle(new THREE.Vector3(0, 1, 0), player.rotation.y));
+      .add(
+        new THREE.Vector3(0, 3, 7).applyAxisAngle(
+          new THREE.Vector3(0, 1, 0),
+          player.rotation.y
+        )
+      );
 
     camera.position.lerp(desiredCameraPos, 4 * delta);
     camera.lookAt(player.position.clone().add(new THREE.Vector3(0, 1.5, 0)));
@@ -257,11 +261,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   animate();
 
-  // --- 10) Resize handling ---
+  // ---------- 11) Resize handling ----------
 
   window.addEventListener('resize', () => {
-    const width = container.clientWidth;
-    const height = container.clientHeight;
+    const { width, height } = getSize();
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height);
