@@ -148,21 +148,31 @@ async function connectWallet() {
       method: 'eth_requestAccounts',
     });
 
+    if (!accounts || accounts.length === 0) {
+      alert('No accounts returned from wallet.');
+      return;
+    }
+
     const address = accounts[0];
     userData.walletAddress = address;
 
     walletAddressSpan.textContent = shortenAddress(address);
     walletAddressSpan.title = address;
 
-    // Load existing profile if exists
+    // اگر قبلا پروفایلی برای این والت داشتیم، لودش کن
     loadProfileForWallet(address);
   } catch (err) {
-    console.error(err);
-    alert('Could not connect wallet.');
+    console.error('Wallet error:', err);
+
+    if (err.code === 4001) {
+      // کاربر خودِ متامسک رو Cancel کرده
+      alert('Wallet connection was rejected in MetaMask.');
+    } else {
+      alert('Wallet error: ' + (err.message || 'Unknown error'));
+    }
   }
 }
 
-connectWalletBtn.addEventListener('click', connectWallet);
 
 // ==== FORMSPREE SUBMIT ====
 
