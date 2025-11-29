@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>MrSol — Contract Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Main MrSol styles -->
+  <link rel="stylesheet" href="../assets/css/mrsol-builder.css" />
+</head>
+<body class="theme-dark">
+  <div class="mrsol-app">
+
+    <!-- Sidebar / Brand -->
+    <aside class="mrsol-sidebar">
+      <div class="mrsol-logo">
+        <div class="mrsol-logo-mark">M</div>
+        <div class="mrsol-logo-text">
+          <span class="mrsol-logo-title">MrSol</span>
+          <span class="mrsol-logo-sub">Solana Contract Builder</span>
+        </div>
+      </div>
+
+      <nav class="mrsol-steps">
+        <button class="step-pill active" data-step="1">
+          <span class="step-index">01</span>
+          <span class="step-label">Template</span>
+        </button>
+        <button class="step-pill" data-step="2">
+          <span class="step-index">02</span>
+          <span class="step-label">Features</span>
+        </button>
+        <button class="step-pill" data-step="3">
+          <span class="step-index">03</span>
+          <span class="step-label">Parameters</span>
+        </button>
+        <button class="step-pill" data-step="4">
+          <span class="step-index">04</span>
+          <span class="step-label">Review & Deploy</span>
+        </button>
+      </nav>
+
+      <div class="mrsol-sidebar-footer">
+        <div class="network-select">
+          <label for="networkSelect">Network</label>
+          <select id="networkSelect">
+            <option value="devnet">Solana Devnet</option>
+            <option value="testnet">Solana Testnet</option>
+            <option value="mainnet">Solana Mainnet</option>
+          </select>
+        </div>
+
+        <button id="walletConnectBtn" class="btn wallet-btn">
+          Connect Wallet
+        </button>
+
+        <p class="wallet-status" id="walletStatus">
+          Wallet: <span class="wallet-status-value">Not connected</span>
+        </p>
+      </div>
+    </aside>
+
+    <!-- Main content -->
+    <main class="mrsol-main">
+      <header class="mrsol-header">
+        <div>
+          <h1>Build your Solana contract visually</h1>
+          <p class="subtitle">
+            No code, no Rust. Pick a template, enable features, tune parameters — MrSol
+            will generate the smart contract in the backend (Phase 2).
+          </p>
+        </div>
+        <div class="pill-info">
+          <span class="pill-dot"></span>
+          <span>Phase 1 — Frontend only (demo)</span>
+        </div>
+      </header>
+
+      <section class="mrsol-layout">
+        <!-- Left: form / steps -->
+        <div class="mrsol-form-panel">
+
+          <!-- STEP 1: TEMPLATE -->
+          <div class="step-panel active" data-step="1">
+            <h2>Select a base template</h2>
+            <p class="step-description">
+              Choose the core contract type you want to build. You can add advanced
+              features in the next step.
+            </p>
+
+            <div class="template-grid">
+              <label class="template-card">
+                <input type="radio" name="template" value="spl_token" checked />
+                <div class="template-body">
+                  <div class="template-title">SPL Token</div>
+                  <p>Standard fungible token on Solana. Perfect for coins & utilities.</p>
+                  <ul class="template-meta">
+                    <li>Mint authority</li>
+                    <li>Burnable</li>
+                    <li>Metadata ready</li>
+                  </ul>
+                </div>
+              </label>
+
+              <label class="template-card">
+                <input type="radio" name="template" value="staking" />
+                <div class="template-body">
+                  <div class="template-title">Staking Pool</div>
+                  <p>Set up a staking vault with reward emissions.</p>
+                  <ul class="template-meta">
+                    <li>Lock periods</li>
+                    <li>Reward rate</li>
+                    <li>Unstake penalties</li>
+                  </ul>
+                </div>
+              </label>
+
+              <label class="template-card">
+                <input type="radio" name="template" value="vesting" />
+                <div class="template-body">
+                  <div class="template-title">Vesting / Team Lock</div>
+                  <p>Timelocked release for teams, advisors & investors.</p>
+                  <ul class="template-meta">
+                    <li>Cliff & schedule</li>
+                    <li>Multi-beneficiary</li>
+                    <li>Transparent unlocks</li>
+                  </ul>
+                </div>
+              </label>
+
+              <label class="template-card">
+                <input type="radio" name="template" value="airdrop" />
+                <div class="template-body">
+                  <div class="template-title">Airdrop Engine</div>
+                  <p>Distribute tokens to a list of addresses with a single action.</p>
+                  <ul class="template-meta">
+                    <li>CSV support</li>
+                    <li>Batch sending</li>
+                    <li>Usage limits</li>
+                  </ul>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <!-- STEP 2: FEATURES -->
+          <div class="step-panel" data-step="2">
+            <h2>Pick advanced features</h2>
+            <p class="step-description">
+              Combine DeFi modules and security layers. MrSol will later generate
+              the right Anchor program on the server.
+            </p>
+
+            <div class="feature-section">
+              <h3>DeFi modules</h3>
+              <div class="chip-row">
+                <button class="chip-toggle" data-feature="staking_rewards">
+                  Staking rewards
+                </button>
+                <button class="chip-toggle" data-feature="bonus_system">
+                  Bonus system
+                </button>
+                <button class="chip-toggle" data-feature="airdrop_module">
+                  Airdrop module
+                </button>
+                <button class="chip-toggle" data-feature="tax_on_transfer">
+                  Transfer tax
+                </button>
+              </div>
+            </div>
+
+            <div class="feature-section">
+              <h3>Security & control</h3>
+              <div class="chip-row">
+                <button class="chip-toggle" data-feature="owner_pause">
+                  Owner pause switch
+                </button>
+                <button class="chip-toggle" data-feature="anti_whale">
+                  Anti-whale limits
+                </button>
+                <button class="chip-toggle danger" data-feature="freeze_forever">
+                  Freeze forever (Danger)
+                </button>
+              </div>
+              <p class="hint">
+                MrSol Safe-Mode will warn users for dangerous configurations.
+              </p>
+            </div>
+          </div>
+
+          <!-- STEP 3: PARAMETERS -->
+          <div class="step-panel" data-step="3">
+            <h2>Fine-tune your parameters</h2>
+            <p class="step-description">
+              Use sliders and minimal inputs — no code, just numbers and logic.
+            </p>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="tokenName">Token / Contract name</label>
+                <input id="tokenName" type="text" placeholder="Example: MrSol Token" />
+              </div>
+
+              <div class="form-group">
+                <label for="tokenSymbol">Symbol</label>
+                <input id="tokenSymbol" type="text" maxlength="10" placeholder="MRSOL" />
+              </div>
+
+              <div class="form-group">
+                <label for="totalSupply">Total supply</label>
+                <div class="range-wrap">
+                  <input
+                    id="totalSupply"
+                    type="range"
+                    min="1"
+                    max="1000"
+                    value="100"
+                  />
+                  <div class="range-value">
+                    <span id="totalSupplyLabel">100</span> M
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="taxPercent">Transfer tax (%)</label>
+                <div class="range-wrap">
+                  <input
+                    id="taxPercent"
+                    type="range"
+                    min="0"
+                    max="15"
+                    value="2"
+                  />
+                  <div class="range-value">
+                    <span id="taxPercentLabel">2</span>%
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="bonusPercent">Bonus rewards (%)</label>
+                <div class="range-wrap">
+                  <input
+                    id="bonusPercent"
+                    type="range"
+                    min="0"
+                    max="50"
+                    value="5"
+                  />
+                  <div class="range-value">
+                    <span id="bonusPercentLabel">5</span>%
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="lockDuration">Lock duration (days)</label>
+                <div class="range-wrap">
+                  <input
+                    id="lockDuration"
+                    type="range"
+                    min="0"
+                    max="365"
+                    value="90"
+                  />
+                  <div class="range-value">
+                    <span id="lockDurationLabel">90</span> days
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p class="hint">
+              These values are only visual in Phase 1. In Phase 2, they will
+              feed the backend generator (Anchor + Rust).
+            </p>
+          </div>
+
+          <!-- STEP 4: REVIEW -->
+          <div class="step-panel" data-step="4">
+            <h2>Review & simulate deploy</h2>
+            <p class="step-description">
+              Confirm your configuration. In Phase 2, this step will send the payload
+              to the MrSol backend server to build & deploy the contract on-chain.
+            </p>
+
+            <div class="review-grid">
+              <div class="review-card">
+                <h3>Summary</h3>
+                <ul class="summary-list" id="summaryList">
+                  <!-- Filled by JS -->
+                </ul>
+              </div>
+
+              <div class="review-card">
+                <h3>Estimated cost</h3>
+                <p class="est-cost-main" id="estCostMain">
+                  ~ 0.00 SOL
+                </p>
+                <p class="est-cost-sub" id="estCostSub">
+                  Based on network & features (mock calculation in Phase 1)
+                </p>
+
+                <div class="safe-mode" id="safeModeBox">
+                  <h4>MrSol Safe-Mode</h4>
+                  <p class="safe-message" id="safeMessage">
+                    No dangerous flags detected.
+                  </p>
+                </div>
+
+                <button id="deployBtn" class="btn primary-btn">
+                  Simulate deploy (Frontend only)
+                </button>
+
+                <p class="deploy-note">
+                  In Phase 2, this will:
+                  <br />• Generate Anchor program<br />
+                  • Build on MrSol server<br />
+                  • Deploy to selected Solana network
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Navigation buttons -->
+          <div class="step-nav">
+            <button id="prevStepBtn" class="btn ghost-btn" disabled>
+              ‹ Back
+            </button>
+            <button id="nextStepBtn" class="btn primary-btn">
+              Next step
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: live preview -->
+        <aside class="mrsol-preview">
+          <h3>Live configuration preview</h3>
+          <p class="preview-sub">
+            This panel updates as you tweak your template, features and parameters.
+          </p>
+
+          <div class="preview-card">
+            <div class="preview-header">
+              <div>
+                <div class="preview-title" id="previewTitle">MrSol Token</div>
+                <div class="preview-subtitle" id="previewSubtitle">
+                  SPL Token • Devnet
+                </div>
+              </div>
+              <span class="badge" id="previewStatus">Draft</span>
+            </div>
+
+            <div class="preview-section">
+              <h4>Template</h4>
+              <p id="previewTemplate">SPL Token</p>
+            </div>
+
+            <div class="preview-section">
+              <h4>Enabled features</h4>
+              <ul id="previewFeatures" class="preview-list">
+                <li>No extra features selected yet.</li>
+              </ul>
+            </div>
+
+            <div class="preview-section">
+              <h4>Key parameters</h4>
+              <ul class="preview-list" id="previewParams">
+                <!-- Filled by JS -->
+              </ul>
+            </div>
+
+            <div class="preview-footer">
+              <span class="preview-network-label">Network:</span>
+              <span class="preview-network-value" id="previewNetwork">Devnet</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast">
+    <div class="toast-body" id="toastBody"></div>
+  </div>
+
+  <script src="../assets/js/mrsol-builder.js"></script>
+</body>
+</html>
+
