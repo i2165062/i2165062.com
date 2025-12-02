@@ -2,79 +2,127 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>I21 → INM Converter (Devnet)</title>
+  <title>I21 → INM (Devnet)</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
+    :root {
+      --bg: #050910;
+      --card: #0b1119;
+      --accent: #23d5ab;
+      --accent2: #23a6d5;
+      --text: #eaeff3;
+      --muted: #8b9bb0;
+    }
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: radial-gradient(circle at top, #10141c, #050910 60%);
-      color: #eaeff3;
       font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, #111827 0, #050910 60%),
+        radial-gradient(circle at bottom, #02040a 0, #02030a 60%);
+      color: var(--text);
     }
+
     .card {
-      width: 420px;
+      width: 430px;
       max-width: 95vw;
       padding: 24px;
-      border-radius: 18px;
-      background: rgba(10, 14, 20, 0.92);
-      box-shadow: 0 24px 60px -32px rgba(0,0,0,0.8);
-      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: 20px;
+      background: rgba(8, 13, 22, 0.96);
+      box-shadow: 0 24px 60px -32px rgba(0, 0, 0, 0.9);
+      border: 1px solid rgba(255, 255, 255, 0.05);
       backdrop-filter: blur(18px);
     }
+
     .row {
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 12px;
     }
+
     h2 {
       margin: 0;
       font-size: 20px;
     }
+
     button {
       border: none;
       border-radius: 999px;
       padding: 9px 16px;
       font-weight: 600;
       cursor: pointer;
-      background: linear-gradient(135deg,#23a6d5,#23d5ab);
+      background: linear-gradient(135deg, var(--accent2), var(--accent));
       color: #050910;
+      font-size: 13px;
     }
+
     button:disabled {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
     }
+
+    .chip {
+      border-radius: 999px;
+      padding: 3px 10px;
+      background: rgba(15, 23, 42, 0.95);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
     .label {
       font-size: 13px;
       opacity: 0.8;
       margin-bottom: 4px;
     }
+
     input[type="number"] {
       width: 100%;
       padding: 8px 10px;
       border-radius: 10px;
-      border: 1px solid #2a3240;
-      background: #050910;
+      border: 1px solid #20293a;
+      background: #020510;
       color: inherit;
-    }
-    .balances {
-      margin-top: 12px;
       font-size: 14px;
+      outline: none;
     }
+
+    input[type="number"]:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px rgba(35, 213, 171, 0.4);
+    }
+
+    .balances {
+      margin-top: 10px;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
     .balances div {
       margin-bottom: 2px;
     }
+
     .small {
       font-size: 11px;
-      opacity: 0.7;
+      opacity: 0.75;
       word-break: break-all;
     }
+
+    .status {
+      margin-top: 10px;
+      min-height: 14px;
+    }
+
+    .status.error { color: #f97373; }
+    .status.ok    { color: var(--muted); }
+
     a {
-      color: #23d5ab;
+      color: var(--accent);
       text-decoration: none;
     }
   </style>
@@ -82,7 +130,10 @@
 <body>
   <div class="card">
     <div class="row">
-      <h2>I21 → INM (Devnet)</h2>
+      <div>
+        <h2>I21 → INM (Devnet)</h2>
+        <div class="chip">On-chain converter demo</div>
+      </div>
       <button id="connectBtn">Connect Wallet</button>
     </div>
 
@@ -100,37 +151,48 @@
 
     <button id="convertBtn" style="width:100%;margin-top:16px;">Convert</button>
 
-    <p id="status" class="small" style="margin-top:10px;"></p>
+    <p id="status" class="small status"></p>
     <p id="txLink" class="small"></p>
   </div>
 
   <script type="module">
-    // ===== Imports via CDN (بدون build) =====
+    // ========= Imports از CDN (بدون build) =========
     import {
       Connection,
       PublicKey,
       SystemProgram,
+      Transaction,
+      TransactionInstruction,
     } from "https://esm.sh/@solana/web3.js@1.95.3";
+
     import * as anchor from "https://esm.sh/@coral-xyz/anchor@0.30.1";
+
     import {
       TOKEN_PROGRAM_ID,
       ASSOCIATED_TOKEN_PROGRAM_ID,
       getAssociatedTokenAddress,
+      createAssociatedTokenAccountInstruction,
     } from "https://esm.sh/@solana/spl-token@0.4.3";
+
     import BN from "https://esm.sh/bn.js@5.2.1";
 
-    // ===== ثابت‌ها (از روی قرارداد تو) =====
+    // ========= ثابت‌ها (از قرارداد تو روی devnet) =========
     const PROGRAM_ID = new PublicKey("AEdvXnuvCqTHSmhZpDf1SmYcY3crmtLsFNtygBQDFLas");
     const I21_MINT   = new PublicKey("7KTjwCYXR9g9aVYqwC6k1tWsm8cdrX8S6C8NJbxssRWe");
     const INM_MINT   = new PublicKey("5UGzJBgswguX6preYgZAavk2ATKkn5Qh4h2LF5zofjom");
-    const TREASURY   = new PublicKey("9PEYjzmwTWBBfQFYV5zixFJVXBaia2W6FKjxSv6Hjpey");
-    const DEAD_WALLET = TREASURY;
 
-    const SEED_CONFIG    = new TextEncoder().encode("config");
-    const SEED_AUTHORITY = new TextEncoder().encode("program_authority");
+    // خزانه جامعه (همان ولت 9PEY...)
+    const TREASURY_WALLET = new PublicKey("9PEYjzmwTWBBfQFYV5zixFJVXBaia2W6FKjxSv6Hjpey");
+    // فعلاً dead wallet را هم همین می‌گذاریم (مطابق init-devnet)
+    const DEAD_WALLET = TREASURY_WALLET;
+
+    // PDAهایی که init-devnet لاگ کرده بود
+    const CONFIG_PDA           = new PublicKey("E4nBmP3PdQnUtx2ZqdN7FLdUFT4Kqehqj56FNFK8mjdp");
+    const PROGRAM_AUTHORITY_PDA = new PublicKey("FSXFRV8vcRg7TGA3KE8w4GGyv1PTPZdigKdDmM4VrGcN");
 
     const RPC_URL = "https://api.devnet.solana.com";
 
+    // ========= المان‌های UI =========
     const connectBtn  = document.getElementById("connectBtn");
     const convertBtn  = document.getElementById("convertBtn");
     const walletInfo  = document.getElementById("walletInfo");
@@ -140,12 +202,17 @@
     const inmEl       = document.getElementById("inmBalance");
     const amountInput = document.getElementById("amountInput");
 
+    // ========= state =========
     let wallet = null;        // Phantom provider
-    let anchorWallet = null;  // شی‌ای که به Anchor می‌دهیم
+    let connection = null;
+    let idl = null;
+    let coder = null;
+    let convertIxName = null;
 
-    function setStatus(msg, isError = false) {
+    function setStatus(msg, type = "ok") {
       statusEl.textContent = msg || "";
-      statusEl.style.color = isError ? "salmon" : "#eaeff3";
+      statusEl.classList.remove("error", "ok");
+      if (msg) statusEl.classList.add(type);
     }
 
     function setTxLink(sig) {
@@ -159,24 +226,51 @@
         "?cluster=devnet'>View on Solana Explorer</a>";
     }
 
+    async function getConnection() {
+      if (!connection) {
+        connection = new Connection(RPC_URL, "confirmed");
+      }
+      return connection;
+    }
+
+    // ====== IDL + Coder را یک بار لود می‌کنیم ======
+    async function loadIdlAndCoder() {
+      if (coder && idl) return;
+      const res = await fetch("./inm_contract.json");
+      if (!res.ok) {
+        throw new Error("Failed to fetch IDL: " + res.status);
+      }
+      idl = await res.json();
+      coder = new anchor.BorshCoder(idl);
+
+      // اسم اینستراکشن کانورت را از IDL پیدا کن
+      const candidates = ["convert_i21_to_inm", "convertI21ToInm"];
+      for (const c of candidates) {
+        if (idl.instructions.some((ix) => ix.name === c)) {
+          convertIxName = c;
+          break;
+        }
+      }
+      if (!convertIxName) {
+        const found = idl.instructions.find((ix) =>
+          ix.name.toLowerCase().includes("convert")
+        );
+        if (!found) {
+          throw new Error("Convert instruction not found in IDL");
+        }
+        convertIxName = found.name;
+      }
+    }
+
+    // ====== اتصال کیف Phantom ======
     async function connectWallet() {
       try {
         if (!window.solana) {
           alert("Phantom wallet not found. Please install Phantom.");
           return;
         }
-
         const resp = await window.solana.connect();
         wallet = window.solana;
-
-        // Anchor-style wallet wrapper
-        anchorWallet = {
-          publicKey: wallet.publicKey,
-          signTransaction: wallet.signTransaction.bind(wallet),
-          signAllTransactions: wallet.signAllTransactions
-            ? wallet.signAllTransactions.bind(wallet)
-            : async (txs) => Promise.all(txs.map((tx) => wallet.signTransaction(tx))),
-        };
 
         walletInfo.textContent = "Wallet: " + resp.publicKey.toBase58();
         connectBtn.textContent = "Connected";
@@ -185,45 +279,13 @@
         await refreshBalances();
       } catch (e) {
         console.error(e);
-        setStatus("Failed to connect wallet: " + (e.message || e), true);
+        setStatus("Failed to connect wallet: " + (e.message || e), "error");
       }
     }
 
-  async function getProgram() {
-  if (!anchorWallet || !anchorWallet.publicKey) {
-    throw new Error("Wallet not connected");
-  }
-  const connection = new Connection(RPC_URL, "confirmed");
-  const provider = new anchor.AnchorProvider(connection, anchorWallet, {
-    preflightCommitment: "confirmed",
-  });
-  anchor.setProvider(provider);
-
-  // IDL را از ریپو می‌خوانیم
-  const res = await fetch("./inm_contract.json");
-  const rawIdl = await res.json();
-
-  // 👇 هک مهم: accounts را خالی می‌کنیم
-  const idl = {
-    ...rawIdl,
-    accounts: [], // مانع ساخت AccountClient می‌شیم؛ برای ما لازم نیست
-  };
-
-  const program = new anchor.Program(idl, PROGRAM_ID, provider);
-  return { program, connection, provider };
-    }
-
-    async function getAddresses(connection) {
-      const [configPda] = PublicKey.findProgramAddressSync(
-        [SEED_CONFIG],
-        PROGRAM_ID
-      );
-      const [programAuthorityPda] = PublicKey.findProgramAddressSync(
-        [SEED_AUTHORITY],
-        PROGRAM_ID
-      );
-
-      const userPk = anchorWallet.publicKey;
+    // ====== محاسبه‌ی آدرس‌های توکن و PDAهای لازم ======
+    async function getAddresses(userPk) {
+      const conn = await getConnection();
 
       const userI21Ata = await getAssociatedTokenAddress(
         I21_MINT,
@@ -239,39 +301,39 @@
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
       );
-      const treasuryI21Ata = await getAssociatedTokenAddress(
+      const programI21Ata = await getAssociatedTokenAddress(
         I21_MINT,
-        TREASURY,
-        false,
+        PROGRAM_AUTHORITY_PDA,
+        true,
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
       );
-      const deadInmAta = await getAssociatedTokenAddress(
-        INM_MINT,
-        DEAD_WALLET,
+      const vaultI21Ata = await getAssociatedTokenAddress(
+        I21_MINT,
+        TREASURY_WALLET,
         false,
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
       );
 
       return {
-        configPda,
-        programAuthorityPda,
+        conn,
         userI21Ata,
         userInmAta,
-        treasuryI21Ata,
-        deadInmAta,
+        programI21Ata,
+        vaultI21Ata,
       };
     }
 
     async function refreshBalances() {
       try {
-        if (!anchorWallet || !anchorWallet.publicKey) return;
+        if (!wallet || !wallet.publicKey) return;
+
         setStatus("Loading balances...");
         setTxLink(null);
 
-        const { connection } = await getProgram();
-        const userPk = anchorWallet.publicKey;
+        const userPk = wallet.publicKey;
+        const conn = await getConnection();
 
         const i21Ata = await getAssociatedTokenAddress(
           I21_MINT,
@@ -288,76 +350,105 @@
           ASSOCIATED_TOKEN_PROGRAM_ID
         );
 
-        const i21Acc = await connection
+        const i21Acc = await conn
           .getTokenAccountBalance(i21Ata)
           .catch(() => null);
-        const inmAcc = await connection
+        const inmAcc = await conn
           .getTokenAccountBalance(inmAta)
           .catch(() => null);
 
         i21El.textContent = i21Acc ? i21Acc.value.uiAmount : 0;
         inmEl.textContent = inmAcc ? inmAcc.value.uiAmount : 0;
 
-        setStatus("Balances updated");
+        setStatus("Balances updated", "ok");
       } catch (e) {
         console.error(e);
-        setStatus("Failed to load balances: " + (e.message || e), true);
+        setStatus("Failed to load balances: " + (e.message || e), "error");
       }
     }
 
+    // ====== ساخت تراکنش کانورت ======
     async function handleConvert() {
       try {
-        if (!anchorWallet || !anchorWallet.publicKey) {
-          setStatus("Connect wallet first", true);
+        if (!wallet || !wallet.publicKey) {
+          setStatus("Connect wallet first", "error");
           return;
         }
-        const raw = Number(amountInput.value);
-        if (!raw || raw <= 0) {
-          setStatus("Enter a valid amount", true);
+        const rawAmount = Number(amountInput.value);
+        if (!rawAmount || rawAmount <= 0) {
+          setStatus("Enter a valid amount of I21", "error");
           return;
         }
 
+        convertBtn.disabled = true;
         setStatus("Preparing transaction...");
         setTxLink(null);
-        convertBtn.disabled = true;
 
-        const { program, connection } = await getProgram();
-        const {
-          configPda,
-          programAuthorityPda,
-          userI21Ata,
-          userInmAta,
-          treasuryI21Ata,
-          deadInmAta,
-        } = await getAddresses(connection);
+        await loadIdlAndCoder();
+        const userPk = wallet.publicKey;
 
-        const amount = new BN(raw); // فعلاً فرض می‌کنیم decimals=0 برای I21
+        const { conn, userI21Ata, userInmAta, programI21Ata, vaultI21Ata } =
+          await getAddresses(userPk);
 
-        setStatus("Sending transaction to devnet...");
+        // اگر حساب توکن INM برای کاربر وجود ندارد، ابتدا بسازیم
+        const userInmAccountInfo = await conn.getAccountInfo(userInmAta);
+        const instructions = [];
 
-        const sig = await program.methods
-          .convertI21ForInm(amount)
-          .accounts({
-            user: anchorWallet.publicKey,
-            config: configPda,
-            i21Mint: I21_MINT,
-            inmMint: INM_MINT,
-            userI21Ata,
-            userInmAta,
-            treasuryI21Ata,
-            deadInmAta,
-            programAuthority: programAuthorityPda,
-            tokenProgram: TOKEN_PROGRAM_ID,
-            systemProgram: SystemProgram.programId,
-          })
-          .rpc();
+        if (!userInmAccountInfo) {
+          instructions.push(
+            createAssociatedTokenAccountInstruction(
+              userPk,          // payer
+              userInmAta,      // ATA address
+              userPk,          // owner
+              INM_MINT,        // mint
+              TOKEN_PROGRAM_ID,
+              ASSOCIATED_TOKEN_PROGRAM_ID
+            )
+          );
+        }
 
-        setStatus("✅ Convert successful");
+        // داده‌ی اینستراکشن را با Coder Anchor می‌سازیم
+        const amountBn = new BN(rawAmount);
+        const data = coder.instruction.encode(convertIxName, {
+          amountI21: amountBn,
+        });
+
+        const keys = [
+          { pubkey: userPk,              isSigner: true,  isWritable: true },  // user
+          { pubkey: CONFIG_PDA,          isSigner: false, isWritable: true },  // config
+          { pubkey: I21_MINT,            isSigner: false, isWritable: false }, // i21_mint
+          { pubkey: INM_MINT,            isSigner: false, isWritable: true },  // inm_mint
+          { pubkey: userI21Ata,          isSigner: false, isWritable: true },  // user_i21_token
+          { pubkey: programI21Ata,       isSigner: false, isWritable: true },  // program_i21_token
+          { pubkey: vaultI21Ata,         isSigner: false, isWritable: true },  // vault_i21_token
+          { pubkey: userInmAta,          isSigner: false, isWritable: true },  // user_inm_token
+          { pubkey: PROGRAM_AUTHORITY_PDA, isSigner: false, isWritable: false }, // program_authority
+          { pubkey: TOKEN_PROGRAM_ID,    isSigner: false, isWritable: false }, // token_program
+        ];
+
+        const convertIx = new TransactionInstruction({
+          programId: PROGRAM_ID,
+          keys,
+          data,
+        });
+
+        instructions.push(convertIx);
+
+        const tx = new Transaction().add(...instructions);
+        tx.feePayer = userPk;
+        const { blockhash } = await conn.getLatestBlockhash();
+        tx.recentBlockhash = blockhash;
+
+        const signedTx = await wallet.signTransaction(tx);
+        const sig = await conn.sendRawTransaction(signedTx.serialize());
+        await conn.confirmTransaction(sig, "confirmed");
+
+        setStatus("✅ Convert transaction confirmed", "ok");
         setTxLink(sig);
         await refreshBalances();
       } catch (e) {
         console.error(e);
-        setStatus("Tx failed: " + (e.message || e), true);
+        setStatus("Tx failed: " + (e.message || e), "error");
       } finally {
         convertBtn.disabled = false;
       }
