@@ -189,22 +189,28 @@
       }
     }
 
-    async function getProgram() {
-      if (!anchorWallet || !anchorWallet.publicKey) {
-        throw new Error("Wallet not connected");
-      }
-      const connection = new Connection(RPC_URL, "confirmed");
-      const provider = new anchor.AnchorProvider(connection, anchorWallet, {
-        preflightCommitment: "confirmed",
-      });
-      anchor.setProvider(provider);
+  async function getProgram() {
+  if (!anchorWallet || !anchorWallet.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+  const connection = new Connection(RPC_URL, "confirmed");
+  const provider = new anchor.AnchorProvider(connection, anchorWallet, {
+    preflightCommitment: "confirmed",
+  });
+  anchor.setProvider(provider);
 
-      // IDL را از ریپو می‌خوانیم
-      const res = await fetch("./inm_contract.json");
-      const idl = await res.json();
+  // IDL را از ریپو می‌خوانیم
+  const res = await fetch("./inm_contract.json");
+  const rawIdl = await res.json();
 
-      const program = new anchor.Program(idl, PROGRAM_ID, provider);
-      return { program, connection, provider };
+  // 👇 هک مهم: accounts را خالی می‌کنیم
+  const idl = {
+    ...rawIdl,
+    accounts: [], // مانع ساخت AccountClient می‌شیم؛ برای ما لازم نیست
+  };
+
+  const program = new anchor.Program(idl, PROGRAM_ID, provider);
+  return { program, connection, provider };
     }
 
     async function getAddresses(connection) {
