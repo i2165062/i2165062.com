@@ -200,7 +200,7 @@
       anchor.setProvider(provider);
 
       // IDL را از ریپو می‌خوانیم
-      const res = await fetch("./idl/inm_contract.json");
+      const res = await fetch("./inm_contract.json");
       const idl = await res.json();
 
       const program = new anchor.Program(idl, PROGRAM_ID, provider);
