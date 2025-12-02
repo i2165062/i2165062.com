@@ -1,0 +1,498 @@
+{
+  "address": "AEdvXnuvCqTHSmhZpDf1SmYcY3crmtLsFNtygBQDFLas",
+  "metadata": {
+    "name": "inm_contract",
+    "version": "0.1.0",
+    "spec": "0.1.0"
+  },
+  "instructions": [
+    {
+      "name": "convert_i21_for_inm",
+      "docs": [
+        "Convert I21 tokens to INM tokens.",
+        "",
+        "Flow:",
+        "1. User transfers `amount` of I21 from their ATA to the treasury I21 ATA.",
+        "2. Program mints INM to:",
+        "- user's INM ATA",
+        "- dead wallet INM ATA (burn portion)",
+        "",
+        "Using:",
+        "- `conversion_rate`: how many INM per 1 I21",
+        "- `burn_bps`: burn percentage in basis points",
+        "- `max_supply`: maximum total INM supply"
+      ],
+      "discriminator": [
+        200,
+        127,
+        162,
+        251,
+        27,
+        139,
+        223,
+        89
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "docs": [
+            "User initiating the conversion."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "docs": [
+            "Global configuration PDA."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "i21_mint",
+          "docs": [
+            "I21 mint (must match `config.i21_mint`)."
+          ]
+        },
+        {
+          "name": "inm_mint",
+          "docs": [
+            "INM mint (must match `config.inm_mint`)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "program_authority",
+          "docs": [
+            "PDA that controls the INM mint authority."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_i21_ata",
+          "docs": [
+            "User's I21 associated token account."
+          ],
+          "writable": true
+        },
+        {
+          "name": "user_inm_ata",
+          "docs": [
+            "User's INM associated token account."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury_i21_ata",
+          "docs": [
+            "Treasury I21 ATA to receive I21 from users."
+          ],
+          "writable": true
+        },
+        {
+          "name": "dead_inm_ata",
+          "docs": [
+            "Dead wallet INM ATA to receive burned INM."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize",
+      "docs": [
+        "Initialize the on-chain configuration.",
+        "",
+        "- Creates the `Config` PDA.",
+        "- Stores admin, I21 mint, INM mint, treasury, dead wallet.",
+        "- Sets conversion_rate, burn_bps, max_supply.",
+        "- Transfers mint authority of INM mint to the `program_authority` PDA."
+      ],
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "docs": [
+            "Admin that pays for the config account and currently owns the INM mint."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "docs": [
+            "Global configuration PDA for the protocol."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "i21_mint",
+          "docs": [
+            "Existing I21 mint (source token)."
+          ]
+        },
+        {
+          "name": "inm_mint",
+          "docs": [
+            "Existing INM mint (target token); its mint authority will be transferred."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury",
+          "docs": [
+            "Treasury system wallet which will receive I21 tokens."
+          ]
+        },
+        {
+          "name": "dead_wallet",
+          "docs": [
+            "Dead / burn wallet which will receive burned INM tokens."
+          ]
+        },
+        {
+          "name": "program_authority",
+          "docs": [
+            "PDA that will become the mint authority for the INM mint."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  103,
+                  114,
+                  97,
+                  109,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": [
+        {
+          "name": "conversion_rate",
+          "type": "u64"
+        },
+        {
+          "name": "burn_bps",
+          "type": "u16"
+        },
+        {
+          "name": "max_supply",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_config",
+      "docs": [
+        "Update some configuration fields (admin only).",
+        "",
+        "Any parameter can be `None` to keep the current value."
+      ],
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "admin",
+          "docs": [
+            "Admin must sign to update configuration."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "docs": [
+            "Global configuration PDA."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_conversion_rate",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "new_burn_bps",
+          "type": {
+            "option": "u16"
+          }
+        },
+        {
+          "name": "new_max_supply",
+          "type": {
+            "option": "u64"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidBurnBps",
+      "msg": "Burn basis points must be <= 10_000"
+    },
+    {
+      "code": 6001,
+      "name": "MathOverflow",
+      "msg": "Math overflow"
+    },
+    {
+      "code": 6002,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6003,
+      "name": "MaxSupplyReached",
+      "msg": "Max supply reached"
+    },
+    {
+      "code": 6004,
+      "name": "Unauthorized",
+      "msg": "Only admin can perform this action"
+    }
+  ],
+  "types": [
+    {
+      "name": "Config",
+      "docs": [
+        "Global configuration for the INM protocol."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "docs": [
+              "Admin of the protocol (has permission to update config)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "i21_mint",
+            "docs": [
+              "I21 mint address (source token)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "inm_mint",
+            "docs": [
+              "INM mint address (target token)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Treasury wallet that receives I21 tokens."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "dead_wallet",
+            "docs": [
+              "Dead / burn wallet that receives burned INM tokens."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "conversion_rate",
+            "docs": [
+              "Conversion rate: how many INM tokens per 1 I21 token."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "burn_bps",
+            "docs": [
+              "Burn basis points (0–10_000)."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_supply",
+            "docs": [
+              "Maximum INM supply that can ever be minted (user + burn)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "total_minted",
+            "docs": [
+              "Total INM minted so far (user + burn)."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump_config",
+            "docs": [
+              "Bump for the `config` PDA."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "bump_authority",
+            "docs": [
+              "Bump for the `program_authority` PDA."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "_padding",
+            "docs": [
+              "Padding / reserved bytes to keep struct size aligned."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
