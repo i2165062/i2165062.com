@@ -156,11 +156,9 @@
   </div>
 
   <script type="module">
-    // ========= Imports از CDN (بدون build) =========
     import {
       Connection,
       PublicKey,
-      SystemProgram,
       Transaction,
       TransactionInstruction,
     } from "https://esm.sh/@solana/web3.js@1.95.3";
@@ -176,23 +174,21 @@
 
     import BN from "https://esm.sh/bn.js@5.2.1";
 
-    // ========= ثابت‌ها (از قرارداد تو روی devnet) =========
+    // ========= ثابت‌ها =========
     const PROGRAM_ID = new PublicKey("AEdvXnuvCqTHSmhZpDf1SmYcY3crmtLsFNtygBQDFLas");
     const I21_MINT   = new PublicKey("7KTjwCYXR9g9aVYqwC6k1tWsm8cdrX8S6C8NJbxssRWe");
     const INM_MINT   = new PublicKey("5UGzJBgswguX6preYgZAavk2ATKkn5Qh4h2LF5zofjom");
 
-    // خزانه جامعه (همان ولت 9PEY...)
     const TREASURY_WALLET = new PublicKey("9PEYjzmwTWBBfQFYV5zixFJVXBaia2W6FKjxSv6Hjpey");
-    // فعلاً dead wallet را هم همین می‌گذاریم (مطابق init-devnet)
-    const DEAD_WALLET = TREASURY_WALLET;
+    const DEAD_WALLET     = TREASURY_WALLET;
 
-    // PDAهایی که init-devnet لاگ کرده بود
-    const CONFIG_PDA           = new PublicKey("E4nBmP3PdQnUtx2ZqdN7FLdUFT4Kqehqj56FNFK8mjdp");
-    const PROGRAM_AUTHORITY_PDA = new PublicKey("FSXFRV8vcRg7TGA3KE8w4GGyv1PTPZdigKdDmM4VrGcN");
+    const CONFIG_PDA             = new PublicKey("E4nBmP3PdQnUtx2ZqdN7FLdUFT4Kqehqj56FNFK8mjdp");
+    const PROGRAM_AUTHORITY_PDA  = new PublicKey("FSXFRV8vcRg7TGA3KE8w4GGyv1PTPZdigKdDmM4VrGcN");
 
-    const RPC_URL = "https://api.devnet.solana.com";
+    const RPC_URL    = "https://api.devnet.solana.com";
+    const CONVERT_IX = "convert_i21_for_inm"; // اسم دقیق طبق IDL :contentReference[oaicite:3]{index=3}
 
-    // ========= المان‌های UI =========
+    // ========= UI refs =========
     const connectBtn  = document.getElementById("connectBtn");
     const convertBtn  = document.getElementById("convertBtn");
     const walletInfo  = document.getElementById("walletInfo");
@@ -203,11 +199,10 @@
     const amountInput = document.getElementById("amountInput");
 
     // ========= state =========
-    let wallet = null;        // Phantom provider
+    let wallet = null;
     let connection = null;
     let idl = null;
     let coder = null;
-    let convertIxName = null;
 
     function setStatus(msg, type = "ok") {
       statusEl.textContent = msg || "";
@@ -233,36 +228,14 @@
       return connection;
     }
 
-    // ====== IDL + Coder را یک بار لود می‌کنیم ======
     async function loadIdlAndCoder() {
-      if (coder && idl) return;
+      if (idl && coder) return;
       const res = await fetch("./inm_contract.json");
-      if (!res.ok) {
-        throw new Error("Failed to fetch IDL: " + res.status);
-      }
+      if (!res.ok) throw new Error("Failed to fetch IDL: " + res.status);
       idl = await res.json();
       coder = new anchor.BorshCoder(idl);
-
-      // اسم اینستراکشن کانورت را از IDL پیدا کن
-      const candidates = ["convert_i21_to_inm", "convertI21ToInm"];
-      for (const c of candidates) {
-        if (idl.instructions.some((ix) => ix.name === c)) {
-          convertIxName = c;
-          break;
-        }
-      }
-      if (!convertIxName) {
-        const found = idl.instructions.find((ix) =>
-          ix.name.toLowerCase().includes("convert")
-        );
-        if (!found) {
-          throw new Error("Convert instruction not found in IDL");
-        }
-        convertIxName = found.name;
-      }
     }
 
-    // ====== اتصال کیف Phantom ======
     async function connectWallet() {
       try {
         if (!window.solana) {
@@ -283,7 +256,6 @@
       }
     }
 
-    // ====== محاسبه‌ی آدرس‌های توکن و PDAهای لازم ======
     async function getAddresses(userPk) {
       const conn = await getConnection();
 
@@ -301,16 +273,16 @@
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
       );
-      const programI21Ata = await getAssociatedTokenAddress(
+      const treasuryI21Ata = await getAssociatedTokenAddress(
         I21_MINT,
-        PROGRAM_AUTHORITY_PDA,
-        true,
+        TREASURY_WALLET,
+        false,
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
       );
-      const vaultI21Ata = await getAssociatedTokenAddress(
-        I21_MINT,
-        TREASURY_WALLET,
+      const deadInmAta = await getAssociatedTokenAddress(
+        INM_MINT,
+        DEAD_WALLET,
         false,
         TOKEN_PROGRAM_ID,
         ASSOCIATED_TOKEN_PROGRAM_ID
@@ -320,8 +292,8 @@
         conn,
         userI21Ata,
         userInmAta,
-        programI21Ata,
-        vaultI21Ata,
+        treasuryI21Ata,
+        deadInmAta,
       };
     }
 
@@ -367,7 +339,6 @@
       }
     }
 
-    // ====== ساخت تراکنش کانورت ======
     async function handleConvert() {
       try {
         if (!wallet || !wallet.publicKey) {
@@ -387,43 +358,65 @@
         await loadIdlAndCoder();
         const userPk = wallet.publicKey;
 
-        const { conn, userI21Ata, userInmAta, programI21Ata, vaultI21Ata } =
-          await getAddresses(userPk);
+        const {
+          conn,
+          userI21Ata,
+          userInmAta,
+          treasuryI21Ata,
+          deadInmAta,
+        } = await getAddresses(userPk);
 
-        // اگر حساب توکن INM برای کاربر وجود ندارد، ابتدا بسازیم
-        const userInmAccountInfo = await conn.getAccountInfo(userInmAta);
         const instructions = [];
 
-        if (!userInmAccountInfo) {
+        // اگر user INM ATA ندارد → بساز
+        const userInmAccInfo = await conn.getAccountInfo(userInmAta);
+        if (!userInmAccInfo) {
           instructions.push(
             createAssociatedTokenAccountInstruction(
               userPk,          // payer
-              userInmAta,      // ATA address
+              userInmAta,      // ATA
               userPk,          // owner
-              INM_MINT,        // mint
+              INM_MINT,
               TOKEN_PROGRAM_ID,
               ASSOCIATED_TOKEN_PROGRAM_ID
             )
           );
         }
 
-        // داده‌ی اینستراکشن را با Coder Anchor می‌سازیم
+        // اگر dead INM ATA وجود ندارد → بساز (هزینه از کاربر، برای devnet اوکیه)
+        const deadInmAccInfo = await conn.getAccountInfo(deadInmAta);
+        if (!deadInmAccInfo) {
+          instructions.push(
+            createAssociatedTokenAccountInstruction(
+              userPk,          // payer
+              deadInmAta,      // ATA
+              DEAD_WALLET,     // owner
+              INM_MINT,
+              TOKEN_PROGRAM_ID,
+              ASSOCIATED_TOKEN_PROGRAM_ID
+            )
+          );
+        }
+
         const amountBn = new BN(rawAmount);
-        const data = coder.instruction.encode(convertIxName, {
-          amountI21: amountBn,
+
+        // اسم آرگومان طبق IDL: amount
+        const data = coder.instruction.encode(CONVERT_IX, {
+          amount: amountBn,
         });
 
+        // ترتیب اکانت‌ها دقیقاً طبق IDL :contentReference[oaicite:4]{index=4}
         const keys = [
-          { pubkey: userPk,              isSigner: true,  isWritable: true },  // user
-          { pubkey: CONFIG_PDA,          isSigner: false, isWritable: true },  // config
-          { pubkey: I21_MINT,            isSigner: false, isWritable: false }, // i21_mint
-          { pubkey: INM_MINT,            isSigner: false, isWritable: true },  // inm_mint
-          { pubkey: userI21Ata,          isSigner: false, isWritable: true },  // user_i21_token
-          { pubkey: programI21Ata,       isSigner: false, isWritable: true },  // program_i21_token
-          { pubkey: vaultI21Ata,         isSigner: false, isWritable: true },  // vault_i21_token
-          { pubkey: userInmAta,          isSigner: false, isWritable: true },  // user_inm_token
+          { pubkey: userPk,             isSigner: true,  isWritable: true },  // user
+          { pubkey: CONFIG_PDA,         isSigner: false, isWritable: true },  // config
+          { pubkey: I21_MINT,           isSigner: false, isWritable: false }, // i21_mint
+          { pubkey: INM_MINT,           isSigner: false, isWritable: true },  // inm_mint
           { pubkey: PROGRAM_AUTHORITY_PDA, isSigner: false, isWritable: false }, // program_authority
-          { pubkey: TOKEN_PROGRAM_ID,    isSigner: false, isWritable: false }, // token_program
+          { pubkey: userI21Ata,         isSigner: false, isWritable: true },  // user_i21_ata
+          { pubkey: userInmAta,         isSigner: false, isWritable: true },  // user_inm_ata
+          { pubkey: treasuryI21Ata,     isSigner: false, isWritable: true },  // treasury_i21_ata
+          { pubkey: deadInmAta,         isSigner: false, isWritable: true },  // dead_inm_ata
+          { pubkey: TOKEN_PROGRAM_ID,   isSigner: false, isWritable: false }, // token_program
         ];
 
         const convertIx = new TransactionInstruction({
@@ -436,6 +429,7 @@
 
         const tx = new Transaction().add(...instructions);
         tx.feePayer = userPk;
+
         const { blockhash } = await conn.getLatestBlockhash();
         tx.recentBlockhash = blockhash;
 
