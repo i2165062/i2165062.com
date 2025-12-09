@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <title>i21 Chain Debug / Web90 Explorer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.10.0/ethers.umd.min.js"></script>
+  <style>
+    body {
+      direction: rtl;
+      font-family: Tahoma, sans-serif;
+      background:#111;
+      color:#eee;
+      margin:0;
+      padding:20px;
+    }
+    h1 { text-align:center; }
+    .card {
+      max-width:900px;
+      margin:10px auto;
+      padding:15px;
+      border:1px solid #555;
+      background:#1b1b1b;
+    }
+    button {
+      padding:8px 12px;
+      margin-top:6px;
+      cursor:pointer;
+    }
+    input {
+      width:100%;
+      padding:6px;
+      margin-top:4px;
+      direction:ltr;
+    }
+    pre {
+      background:#000;
+      color:#0f0;
+      padding:10px;
+      overflow:auto;
+      max-height:250px;
+      font-size:12px;
+    }
+    label { font-size:13px; font-weight:bold; }
+  </style>
+</head>
+<body>
+
+<h1>🧪 i21 Chain Debug / Web90 Explorer</h1>
+
+<div class="card">
+  <h3>۱) وضعیت اتصال به نود</h3>
+  <p>RPC: <code id="rpcUrl"></code></p>
+  <button onclick="checkConnection()">چک کردن اتصال و آخرین بلاک</button>
+  <pre id="connLog"></pre>
+</div>
+
+<div class="card">
+  <h3>۲) تست تابع getPage از قرارداد Web90</h3>
+  <p>Contract: <code id="contractAddr"></code></p>
+  <label>آدرس کاربر (owner):</label>
+  <input id="ownerInput" placeholder="0x...">
+  <button onclick="callGetPage()">صدا زدن getPage(owner)</button>
+  <pre id="pageLog"></pre>
+</div>
+
+<script>
+  // 🔧 این دو مقدار را حتماً با مقادیر فعلی خودت ست کن
+  const RPC_URL = "http://188.209.138.136:8545";
+  const CONTRACT_ADDRESS = "0x73511669fd4dE447feD18BB79bAFeAC93aB7F31f"; // اگر دوباره deploy کردی، اینجا را آپدیت کن
+
+  const ABI = [
+    "function getPage(address owner) view returns (string title, string html, uint256 lastUpdate)"
+  ];
+
+  document.getElementById("rpcUrl").textContent = RPC_URL;
+  document.getElementById("contractAddr").textContent = CONTRACT_ADDRESS;
+
+  const connLog = document.getElementById("connLog");
+  const pageLog = document.getElementById("pageLog");
+
+  const provider = new ethers.JsonRpcProvider(RPC_URL);
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+
+  async function checkConnection() {
+    connLog.textContent = "در حال چک کردن...\n";
+    try {
+      const net = await provider.getNetwork();
+      const block = await provider.getBlockNumber();
+      connLog.textContent += "✅ Connected to RPC\n";
+      connLog.textContent += "chainId: " + net.chainId + "\n";
+      connLog.textContent += "latest block: " + block + "\n";
+    } catch (e) {
+      connLog.textContent += "❌ ERROR:\n" + (e.message || e.toString()) + "\n";
+    }
+  }
+
+  async function callGetPage() {
+    const owner = document.getElementById("ownerInput").value.trim();
+    pageLog.textContent = "";
+    if (!ethers.isAddress(owner)) {
+      pageLog.textContent = "❌ آدرس وارد شده معتبر نیست.";
+      return;
+    }
+    pageLog.textContent = "در حال صدا زدن getPage(" + owner + ") ...\n";
+    try {
+      const result = await contract.getPage(owner);
+      const [title, html, ts] = result;
+      pageLog.textContent += "✅ OK\n";
+      pageLog.textContent += "title: " + title + "\n";
+      pageLog.textContent += "html length: " + (html ? html.length : 0) + "\n";
+      pageLog.textContent += "timestamp: " + ts.toString() + "\n";
+    } catch (e) {
+      pageLog.textContent += "❌ ERROR:\n" + (e.message || e.toString()) + "\n";
+    }
+  }
+</script>
+
+</body>
+</html>
