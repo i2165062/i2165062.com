@@ -79,7 +79,7 @@
   const connLog = document.getElementById("connLog");
   const pageLog = document.getElementById("pageLog");
 
-  const provider = new ethers.JsonRpcProvider(RPC_URL);
+const provider = new ethers.JsonRpcProvider("http://188.209.138.136:8545");//la
   const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
 
   async function checkConnection() {
