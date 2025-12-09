@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <title>i21 Explorer — Mini Etherscan</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.10.0/ethers.umd.min.js"></script>
+
+  <style>
+    body {
+      direction: rtl;
+      margin: 0;
+      padding: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      background: #050910;
+      color: #e5ecf5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 60px;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 26px;
+      text-align: center;
+    }
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #9ca9bc;
+      margin-bottom: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .card {
+      background: #0c1220;
+      border-radius: 10px;
+      border: 1px solid #1e2b3f;
+      box-shadow: 0 10px 25px rgba(0,0,0,.5);
+      padding: 12px 14px;
+      box-sizing: border-box;
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 16px;
+      border-bottom: 1px solid #1e2b3f;
+      padding-bottom: 6px;
+    }
+    .label {
+      font-size: 12px;
+      color: #9ca9bc;
+    }
+    .value {
+      font-size: 13px;
+      direction: ltr;
+      text-align: left;
+      word-break: break-all;
+    }
+    button {
+      padding: 7px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: #2563eb;
+      color: #fff;
+      margin-top: 6px;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: 6px;
+      border: 1px solid #1e2b3f;
+      background: #050913;
+      color: #e5ecf5;
+      font-size: 13px;
+      box-sizing: border-box;
+      direction: ltr;
+      text-align: left;
+    }
+    .status {
+      font-size: 12px;
+      color: #9ca9bc;
+      margin-top: 6px;
+      min-height: 16px;
+      white-space: pre-line;
+    }
+    .blocks-list, .tx-list {
+      font-size: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+    .block-item, .tx-item {
+      padding: 6px 4px;
+      border-bottom: 1px solid #1e2b3f;
+      cursor: pointer;
+    }
+    .block-item:hover, .tx-item:hover {
+      background: #151c30;
+    }
+    .mono {
+      direction: ltr;
+      text-align: left;
+      font-family: Consolas, "Courier New", monospace;
+      word-break: break-all;
+    }
+    .tag {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-size: 11px;
+      background: #111827;
+      border: 1px solid #1f2937;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>i21 Explorer</h1>
+  <div class="subtitle">
+    مینی Etherscan برای بلاک‌چین لوکال i21 (Hardhat) — فقط جهت تست و نمایش برای سرمایه‌گذاران
+  </div>
+
+  <div class="grid">
+    <!-- Network Info -->
+    <div class="card">
+      <h2>۱) اطلاعات شبکه</h2>
+      <div class="label">RPC:</div>
+      <div class="value" id="rpcUrl"></div>
+      <div class="label" style="margin-top:6px;">Chain ID / Name:</div>
+      <div class="value" id="netInfo">—</div>
+      <div class="label" style="margin-top:6px;">آخرین بلاک:</div>
+      <div class="value" id="latestBlock">—</div>
+      <button id="refreshNetworkBtn">به‌روزرسانی</button>
+      <div class="status" id="networkStatus"></div>
+    </div>
+
+    <!-- Latest Blocks -->
+    <div class="card">
+      <h2>۲) آخرین بلاک‌ها</h2>
+      <div class="label">تعداد بلاک‌های اخیر برای نمایش:</div>
+      <input type="number" id="blockCount" value="10" min="1" max="50" />
+      <button id="loadBlocksBtn">نمایش آخرین بلاک‌ها</button>
+      <div class="status" id="blocksStatus"></div>
+      <div class="blocks-list" id="blocksList"></div>
+    </div>
+
+    <!-- Block / Tx Details -->
+    <div class="card">
+      <h2>۳) جزییات بلاک / تراکنش</h2>
+      <div class="label">بلوک انتخاب‌شده:</div>
+      <div class="value mono" id="selectedBlockTitle">—</div>
+      <div class="label" style="margin-top:6px;">هش بلاک / زمان:</div>
+      <div class="value mono" id="selectedBlockMeta">—</div>
+      <div class="label" style="margin-top:6px;">تراکنش‌ها:</div>
+      <div class="tx-list" id="txList"></div>
+    </div>
+
+    <!-- Search -->
+    <div class="card">
+      <h2>۴) جست‌وجو</h2>
+      <div class="label">شماره بلاک (Block Number):</div>
+      <input type="number" id="searchBlockNumber" placeholder="مثال: 0, 1, 2 ..." />
+      <button id="searchBlockBtn">نمایش بلاک</button>
+
+      <div class="label" style="margin-top:10px;">هش تراکنش (Tx Hash):</div>
+      <input type="text" id="searchTxHash" placeholder="0x..." />
+      <button id="searchTxBtn">نمایش تراکنش</button>
+
+      <div class="status" id="searchStatus"></div>
+      <pre class="mono" id="searchResult" style="font-size:11px; max-height:260px; overflow:auto;background:#020617;border-radius:6px;padding:6px 8px;"></pre>
+    </div>
+  </div>
+</div>
+
+<script>
+  const RPC_URL = "http://188.209.138.136:8545";
+  document.getElementById("rpcUrl").textContent = RPC_URL;
+
+  const provider = new ethers.JsonRpcProvider(RPC_URL);
+
+  const refreshNetworkBtn = document.getElementById("refreshNetworkBtn");
+  const networkStatus = document.getElementById("networkStatus");
+  const netInfoEl = document.getElementById("netInfo");
+  const latestBlockEl = document.getElementById("latestBlock");
+
+  const loadBlocksBtn = document.getElementById("loadBlocksBtn");
+  const blocksStatus = document.getElementById("blocksStatus");
+  const blocksList = document.getElementById("blocksList");
+
+  const selectedBlockTitle = document.getElementById("selectedBlockTitle");
+  const selectedBlockMeta = document.getElementById("selectedBlockMeta");
+  const txList = document.getElementById("txList");
+
+  const searchBlockBtn = document.getElementById("searchBlockBtn");
+  const searchTxBtn = document.getElementById("searchTxBtn");
+  const searchBlockNumber = document.getElementById("searchBlockNumber");
+  const searchTxHash = document.getElementById("searchTxHash");
+  const searchStatus = document.getElementById("searchStatus");
+  const searchResult = document.getElementById("searchResult");
+
+  async function refreshNetwork() {
+    networkStatus.textContent = "در حال اتصال به نود...";
+    try {
+      const net = await provider.getNetwork();
+      const latest = await provider.getBlockNumber();
+      netInfoEl.textContent = `chainId=${net.chainId.toString()}  (نام: hardhat محلی)`;
+      latestBlockEl.textContent = latest.toString();
+      networkStatus.textContent = "✅ اتصال موفق";
+    } catch (e) {
+      console.error(e);
+      networkStatus.textContent = "❌ خطا در اتصال به نود: " + (e.message || e.toString());
+    }
+  }
+
+  async function loadLatestBlocks() {
+    blocksStatus.textContent = "در حال دریافت بلاک‌ها...";
+    blocksList.innerHTML = "";
+    txList.innerHTML = "";
+    selectedBlockTitle.textContent = "—";
+    selectedBlockMeta.textContent = "—";
+
+    try {
+      const count = Math.min(
+        Math.max(parseInt(document.getElementById("blockCount").value || "10", 10), 1),
+        50
+      );
+      const latest = await provider.getBlockNumber();
+
+      let html = "";
+      for (let i = 0; i < count; i++) {
+        const num = latest - i;
+        if (num < 0) break;
+        const block = await provider.getBlock(num);
+        const txCount = block.transactions.length;
+        const timeStr = new Date(block.timestamp * 1000).toLocaleTimeString("fa-IR");
+        html += `
+          <div class="block-item" data-block="${block.number}">
+            <div><span class="tag">#${block.number}</span> <span>${txCount} tx</span></div>
+            <div class="mono" style="font-size:11px;">${block.hash}</div>
+            <div style="font-size:11px; color:#9ca9bc;">زمان: ${timeStr}</div>
+          </div>
+        `;
+      }
+      blocksList.innerHTML = html || "<div>بلاکی پیدا نشد.</div>";
+      blocksStatus.textContent = "✅ آماده. برای دیدن جزییات روی بلاک کلیک کنید.";
+    } catch (e) {
+      console.error(e);
+      blocksStatus.textContent = "❌ خطا در دریافت بلاک‌ها: " + (e.message || e.toString());
+    }
+  }
+
+  async function showBlockDetails(blockNumber) {
+    try {
+      const block = await provider.getBlockWithTransactions(blockNumber);
+      if (!block) {
+        selectedBlockTitle.textContent = "بلاکی با این شماره پیدا نشد.";
+        selectedBlockMeta.textContent = "—";
+        txList.innerHTML = "";
+        return;
+      }
+      const dateStr = new Date(block.timestamp * 1000).toLocaleString("fa-IR");
+      selectedBlockTitle.textContent = `Block #${block.number} — ${block.transactions.length} tx`;
+      selectedBlockMeta.textContent = `Hash: ${block.hash}\nParent: ${block.parentHash}\nزمان: ${dateStr}`;
+
+      if (block.transactions.length === 0) {
+        txList.innerHTML = "<div class='tx-item'>تراکنشی در این بلاک نیست.</div>";
+        return;
+      }
+
+      let txHtml = "";
+      for (const tx of block.transactions) {
+        txHtml += `
+          <div class="tx-item">
+            <div class="mono" style="font-size:11px;">${tx.hash}</div>
+            <div style="font-size:11px; color:#9ca9bc;">
+              از: <span class="mono">${tx.from}</span><br>
+              به: <span class="mono">${tx.to || "(contract creation)"}</span><br>
+              مقدار: ${ethers.formatEther(tx.value)} ETH
+            </div>
+          </div>
+        `;
+      }
+      txList.innerHTML = txHtml;
+    } catch (e) {
+      console.error(e);
+      selectedBlockTitle.textContent = "❌ خطا در گرفتن اطلاعات بلاک";
+      selectedBlockMeta.textContent = e.message || e.toString();
+      txList.innerHTML = "";
+    }
+  }
+
+  async function searchBlock() {
+    const numStr = searchBlockNumber.value.trim();
+    searchStatus.textContent = "";
+    searchResult.textContent = "";
+    if (!numStr) {
+      searchStatus.textContent = "لطفاً شماره بلاک را وارد کنید.";
+      return;
+    }
+    const num = parseInt(numStr, 10);
+    if (isNaN(num) || num < 0) {
+      searchStatus.textContent = "شماره بلاک نامعتبر است.";
+      return;
+    }
+    searchStatus.textContent = "در حال جست‌وجوی بلاک...";
+    try {
+      const block = await provider.getBlockWithTransactions(num);
+      if (!block) {
+        searchStatus.textContent = "بلاکی با این شماره پیدا نشد.";
+        searchResult.textContent = "";
+        return;
+      }
+      searchStatus.textContent = "✅ بلاک پیدا شد.";
+      searchResult.textContent = JSON.stringify(block, null, 2);
+      // همزمان در پنل اصلی هم نشان دهیم
+      showBlockDetails(num);
+    } catch (e) {
+      console.error(e);
+      searchStatus.textContent = "❌ خطا در جست‌وجوی بلاک: " + (e.message || e.toString());
+    }
+  }
+
+  async function searchTx() {
+    const hash = searchTxHash.value.trim();
+    searchStatus.textContent = "";
+    searchResult.textContent = "";
+    if (!hash) {
+      searchStatus.textContent = "لطفاً هش تراکنش را وارد کنید.";
+      return;
+    }
+    searchStatus.textContent = "در حال جست‌وجوی تراکنش...";
+    try {
+      const tx = await provider.getTransaction(hash);
+      if (!tx) {
+        searchStatus.textContent = "تراکنشی با این هش پیدا نشد.";
+        return;
+      }
+      const receipt = await provider.getTransactionReceipt(hash);
+      searchStatus.textContent = "✅ تراکنش پیدا شد.";
+      const combined = { ...tx, receipt };
+      searchResult.textContent = JSON.stringify(combined, null, 2);
+      if (tx.blockNumber != null) {
+        showBlockDetails(tx.blockNumber);
+      }
+    } catch (e) {
+      console.error(e);
+      searchStatus.textContent = "❌ خطا در جست‌وجوی تراکنش: " + (e.message || e.toString());
+    }
+  }
+
+  // رویدادها
+  refreshNetworkBtn.addEventListener("click", refreshNetwork);
+  loadBlocksBtn.addEventListener("click", loadLatestBlocks);
+  searchBlockBtn.addEventListener("click", searchBlock);
+  searchTxBtn.addEventListener("click", searchTx);
+
+  blocksList.addEventListener("click", (e) => {
+    const item = e.target.closest(".block-item");
+    if (!item) return;
+    const num = parseInt(item.dataset.block, 10);
+    if (!isNaN(num)) {
+      showBlockDetails(num);
+    }
+  });
+
+  // اولین بار که صفحه باز می‌شود:
+  refreshNetwork();
+  loadLatestBlocks();
+</script>
+</body>
+</html>
