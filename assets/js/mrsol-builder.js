@@ -1,5 +1,5 @@
 // ====== CONFIG ======
-const MRSOL_API_BASE = "http://188.209.138.136:5001";
+const MRSOL_API_BASE = "https://188.209.138.136:5001";
 
 // ====== STATE ======
 const state = {
