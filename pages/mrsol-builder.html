@@ -5,13 +5,11 @@
   <title>MrSol — Solana Contract Builder</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Main MrSol styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="../assets/css/mrsol-builder.css" />
 
-  <!-- Favicon / icons -->
-  <link rel="icon" type="image/x-icon" href="images/PC22.ico" />
-  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png" />
-  <link rel="manifest" href="/site.webmanifest" />
+  <!-- Favicon / icons (در صورت نیاز مسیر را عوض کن) -->
+  <link rel="icon" type="image/x-icon" href="../images/PC22.ico" />
   <meta name="theme-color" content="#05070a" />
 </head>
 
@@ -85,7 +83,7 @@
       </div>
     </aside>
 
-    <!-- Main content -->
+    <!-- Main -->
     <main class="mrsol-main">
       <header class="mrsol-header">
         <div>
@@ -103,7 +101,7 @@
       </header>
 
       <section class="mrsol-layout">
-        <!-- Left panel: steps -->
+        <!-- Steps panel (left) -->
         <div class="mrsol-steps-panel">
           <!-- STEP 1 -->
           <div class="step-panel active" data-step-panel="1">
@@ -363,6 +361,35 @@
                   Deploy on Solana devnet
                 </button>
 
+                <!-- باکس نمایش آخرین دیپلوی -->
+                <div id="deployResult" class="deploy-result">
+                  <p class="deploy-result-title">Last deployment</p>
+                  <p class="deploy-result-row">
+                    Mint address:<br />
+                    <span id="deployMint" class="deploy-mono">—</span>
+                  </p>
+                  <p class="deploy-result-row">
+                    Explorer:<br />
+                    <a
+                      id="deployExplorerLink"
+                      href="#"
+                      target="_blank"
+                      rel="noopener"
+                      class="deploy-link"
+                    >—</a>
+                  </p>
+                  <p class="deploy-result-row">
+                    Download config:<br />
+                    <a
+                      id="deployDownloadLink"
+                      href="#"
+                      target="_blank"
+                      rel="noopener"
+                      class="deploy-link"
+                    >—</a>
+                  </p>
+                </div>
+
                 <p class="deploy-note">
                   After deployment you’ll see:
                   <br />• Token mint address<br />
@@ -371,24 +398,23 @@
                 </p>
               </div>
             </div>
-          </div>
 
-          <!-- Navigation buttons -->
-          <div class="step-nav">
-            <button id="prevStepBtn" class="btn ghost-btn" disabled>
-              ‹ Back
-            </button>
-            <button id="nextStepBtn" class="btn primary-btn">
-              Next step
-            </button>
+            <div class="step-nav">
+              <button id="prevStepBtn" class="btn ghost-btn" disabled>
+                ‹ Back
+              </button>
+              <button id="nextStepBtn" class="btn primary-btn">
+                Next step
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Right: live preview -->
+        <!-- Preview (right) -->
         <aside class="mrsol-preview">
           <h3>Live configuration preview</h3>
           <p class="preview-sub">
-            This panel updates as you adjust values and enables features.
+            This panel updates as you adjust values and enable features.
           </p>
 
           <div class="preview-card" id="previewCard">
@@ -447,6 +473,7 @@
     </main>
   </div>
 
+  <!-- Toast -->
   <div id="toast" class="toast">
     <div class="toast-body" id="toastBody"></div>
   </div>
