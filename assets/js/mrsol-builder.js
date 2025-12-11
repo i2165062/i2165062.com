@@ -1,7 +1,6 @@
 // ====== CONFIG ======
 const MRSOL_API_BASE = "https://mrsol-api.i2165062.com";
 
-
 // ====== STATE ======
 const state = {
   currentStep: 1,
@@ -20,7 +19,7 @@ const state = {
   walletAddress: null,
 };
 
-// ====== DOM HELPERS ======
+// ====== HELPERS ======
 const qs = (sel, parent = document) => parent.querySelector(sel);
 const qsa = (sel, parent = document) => Array.from(parent.querySelectorAll(sel));
 
@@ -78,7 +77,6 @@ function initStepNavigation() {
       if (state.currentStep < 4) {
         setStep(state.currentStep + 1);
       } else {
-        // when on last step clicking "Finish" just keeps you there
         showToast("You are already on the final step.");
       }
     });
@@ -215,44 +213,69 @@ function initWalletButton() {
 
   if (!btn || !statusSpan) return;
 
-  btn.addEventListener("click", () => {
-    if (!state.walletConnected) {
-      const addr = prompt(
-        "Paste your Solana wallet address (Devnet)."
-      );
-
-      if (!addr) {
-        showToast("Wallet address is required.");
-        return;
-      }
-
-      const trimmed = addr.trim();
-      if (trimmed.length < 32 || trimmed.length > 60) {
-        showToast("This doesn't look like a valid Solana address.");
-        return;
-      }
-
-      state.walletConnected = true;
-      state.walletAddress = trimmed;
-
-      btn.textContent = "Wallet connected";
-      statusSpan.textContent =
-        trimmed.slice(0, 4) + "..." + trimmed.slice(-4);
-
-      showToast("Wallet connected (manual address).");
-      updatePreview();
-    } else {
+  btn.addEventListener("click", async () => {
+    // اگر وصل است → دیسکانکت
+    if (state.walletConnected) {
       state.walletConnected = false;
       state.walletAddress = null;
       btn.textContent = "Connect Wallet";
       statusSpan.textContent = "Not connected";
       showToast("Wallet disconnected.");
       updatePreview();
+      return;
     }
+
+    // تلاش برای اتصال Phantom
+    try {
+      if (window.solana && window.solana.isPhantom) {
+        showToast("Connecting to Phantom wallet...");
+        const resp = await window.solana.connect();
+        const addr = resp.publicKey.toString();
+
+        state.walletConnected = true;
+        state.walletAddress = addr;
+
+        btn.textContent = "Wallet connected";
+        statusSpan.textContent =
+          addr.slice(0, 4) + "..." + addr.slice(-4);
+
+        showToast("Phantom wallet connected.");
+        updatePreview();
+        return;
+      }
+    } catch (e) {
+      console.error("Phantom connect error:", e);
+      showToast("Wallet connection cancelled.");
+      return;
+    }
+
+    // اگر Phantom نبود → fallback
+    const addr = prompt("Paste your Solana wallet address (Devnet).");
+
+    if (!addr) {
+      showToast("Wallet address is required.");
+      return;
+    }
+
+    const trimmed = addr.trim();
+    if (trimmed.length < 32 || trimmed.length > 60) {
+      showToast("This doesn't look like a valid Solana address.");
+      return;
+    }
+
+    state.walletConnected = true;
+    state.walletAddress = trimmed;
+
+    btn.textContent = "Wallet connected";
+    statusSpan.textContent =
+      trimmed.slice(0, 4) + "..." + trimmed.slice(-4);
+
+    showToast("Wallet connected (manual address).");
+    updatePreview();
   });
 }
 
-// ====== DEPLOY & FAUCET ======
+// ====== BACKEND CALLS ======
 async function callBackend(path, body) {
   const url = `${MRSOL_API_BASE}${path}`;
   const res = await fetch(url, {
@@ -273,6 +296,11 @@ async function callBackend(path, body) {
 function initDeployButton() {
   const btn = qs("#deployBtn");
   if (!btn) return;
+
+  const resultBox = qs("#deployResult");
+  const mintSpan = qs("#deployMint");
+  const explorerLink = qs("#deployExplorerLink");
+  const downloadLink = qs("#deployDownloadLink");
 
   btn.addEventListener("click", async () => {
     updateSummary();
@@ -301,6 +329,30 @@ function initDeployButton() {
 
       const data = await callBackend("/api/mrsol/deploy", payload);
       console.log("MrSol deploy result:", data);
+
+      // پر کردن UI آخرین دیپلوی
+      if (resultBox && mintSpan && explorerLink && downloadLink) {
+        mintSpan.textContent = data.id || "—";
+
+        if (data.explorerUrl) {
+          explorerLink.href = data.explorerUrl;
+          explorerLink.textContent = data.explorerUrl;
+        } else {
+          explorerLink.href = "#";
+          explorerLink.textContent = "—";
+        }
+
+        const downloadUrl = data.downloadUrl
+          ? `${MRSOL_API_BASE}${data.downloadUrl}`
+          : "#";
+
+        downloadLink.href = downloadUrl;
+        downloadLink.textContent = data.downloadUrl
+          ? "Download config file"
+          : "—";
+
+        resultBox.classList.add("show");
+      }
 
       alert(
         "✅ Contract deployed on devnet!\n\n" +
@@ -503,14 +555,19 @@ function updateSafeMode() {
   const box = qs("#safeModeBox");
   if (!box) return;
 
+  const labelEl = qs(".safety-label", box);
+  const textEl = qs(".safety-text", box);
+
   if (state.network === "devnet") {
-    box.querySelector(".safety-label").textContent = "Devnet safety mode ON";
-    qs(".safety-text", box).textContent =
-      "All deployments are sent to Solana devnet. Perfect for testing without real funds.";
+    if (labelEl) labelEl.textContent = "Devnet safety mode ON";
+    if (textEl)
+      textEl.textContent =
+        "All deployments are sent to Solana devnet. Perfect for testing without real funds.";
   } else {
-    box.querySelector(".safety-label").textContent = "Devnet only in backend";
-    qs(".safety-text", box).textContent =
-      "For now, backend always deploys to devnet, even if you choose testnet/mainnet.";
+    if (labelEl) labelEl.textContent = "Devnet only in backend";
+    if (textEl)
+      textEl.textContent =
+        "For now, backend always deploys to devnet, even if you choose testnet/mainnet.";
   }
 }
 
