@@ -2,30 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>MrSol — Solana Contract Builder</title>
+  <title>MrSol — Visually build Solana blockchain contracts</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- SEO meta -->
+  <meta name="description"
+        content="MrSol is a visual Solana contract builder. Connect your wallet, configure an SPL token in a few steps, and deploy to Solana devnet with an explorer link and downloadable config — no Rust or local setup needed." />
+
+  <!-- Open Graph / Social preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="MrSol — Visual Solana Contract Builder" />
+  <meta property="og:description"
+        content="Design and deploy Solana SPL token contracts visually. MrSol lets you build on-chain without installing tooling — just connect your wallet and deploy to devnet." />
+  <meta property="og:url" content="https://i2165062.com/pages/mrsol-builder.html" />
+  <meta property="og:image" content="https://i2165062.com/images/mrsol.png" />
+  <meta property="og:image:alt" content="MrSol — visually build a blockchain contract, powered by i2165062.com" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="MrSol — Visual Solana Contract Builder" />
+  <meta name="twitter:description"
+        content="Spin up Solana SPL token contracts in minutes. MrSol handles the backend; you only tweak sliders and click deploy." />
+  <meta name="twitter:image" content="https://i2165062.com/images/mrsol.png" />
 
   <!-- Styles -->
   <link rel="stylesheet" href="../assets/css/mrsol-builder.css" />
-  
 
-  <!-- Favicon / icons (در صورت نیاز مسیر را عوض کن) -->
+  <!-- Favicon / icons -->
   <link rel="icon" type="image/x-icon" href="../images/PC22.ico" />
   <meta name="theme-color" content="#05070a" />
-  	<!-- iOS / iPadOS Home Screen -->
-<link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon-180.png" />
 
-<!-- Android / Chrome PWA -->
-<link rel="manifest" href="/site.webmanifest" />
-<meta name="theme-color" content="#0b0e11" />
+  <!-- iOS / iPadOS Home Screen -->
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon-180.png" />
 
-<!-- Safari pinned tab (macOS) - تک‌رنگ -->
-<link rel="mask-icon" href="images/safari-pinned-tab.svg" color="#c5a15b" />
+  <!-- Android / Chrome PWA -->
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#0b0e11" />
 
-<!-- Windows tiles (اختیاری) -->
-<meta name="msapplication-TileColor" content="#0b0e11" />
-<meta name="msapplication-square150x150logo" content="images/mstile-150.png" />
+  <!-- Safari pinned tab (macOS) -->
+  <link rel="mask-icon" href="../images/safari-pinned-tab.svg" color="#c5a15b" />
 
+  <!-- Windows tiles (optional) -->
+  <meta name="msapplication-TileColor" content="#0b0e11" />
+  <meta name="msapplication-square150x150logo" content="../images/mstile-150.png" />
 </head>
 
 <body class="mrsol-body">
@@ -104,9 +123,10 @@
         <div>
           <h1>Build your Solana contract visually</h1>
           <p class="subtitle">
-            No Rust, no local setup. Configure your contract in the browser —
-            MrSol will deploy it to <strong>Solana devnet</strong> and give you
-            an explorer link plus downloadable config.
+            Skip Rust and heavy local setup. With <strong>MrSol</strong> you can
+            visually configure an SPL token, connect your wallet, and deploy to
+            <strong>Solana devnet</strong> in a few clicks — with an explorer
+            link and downloadable config file for future upgrades.
           </p>
         </div>
         <div class="pill-info">
@@ -124,7 +144,8 @@
             <p class="panel-subtitle">
               Start from a pre-configured contract type. In this phase, the
               backend deploys <strong>SPL token</strong> contracts; other
-              templates are coming next.
+              templates such as staking and vesting will be unlocked in the next
+              versions.
             </p>
 
             <div class="template-grid">
@@ -190,8 +211,9 @@
           <div class="step-panel" data-step-panel="2">
             <h2 class="panel-title">2. Enable add-on features</h2>
             <p class="panel-subtitle">
-              Toggle advanced behaviors for your contract. Some options are
-              informational for now and will be fully on-chain in later phases.
+              Toggle advanced behaviors for your contract. Today these options
+              are stored in your config file and help you design tokenomics;
+              future versions will implement them fully on-chain.
             </p>
 
             <div class="feature-grid">
@@ -239,8 +261,8 @@
 
             <div class="info-callout">
               In this version, the backend always deploys a standard SPL token.
-              Feature toggles are stored in your configuration file so you can
-              extend the contract later.
+              Feature toggles are saved as metadata in your configuration file
+              so you can extend or re-deploy your contract logic later.
             </div>
           </div>
 
@@ -249,7 +271,7 @@
             <h2 class="panel-title">3. Token parameters</h2>
             <p class="panel-subtitle">
               Define the core properties of your token. All values are applied
-              directly during mint on devnet.
+              directly during mint on devnet and reflected in the explorer.
             </p>
 
             <div class="form-grid">
@@ -339,7 +361,8 @@
             <h2 class="panel-title">4. Review & deploy</h2>
             <p class="panel-subtitle">
               Double-check your configuration, then deploy to Solana devnet.
-              You’ll get a token mint address, explorer link and a config file.
+              You’ll see the token mint address, an explorer link and a
+              downloadable configuration file that documents your choices.
             </p>
 
             <div class="review-grid">
@@ -356,7 +379,7 @@
                   </div>
                   <p class="safety-text">
                     All deployments go to <strong>devnet</strong>. You can test
-                    everything without risking real funds.
+                    everything without risking real funds or mainnet liquidity.
                   </p>
                 </div>
               </div>
@@ -376,7 +399,7 @@
                   Deploy on Solana devnet
                 </button>
 
-                <!-- باکس نمایش آخرین دیپلوی -->
+                <!-- Last deployment box -->
                 <div id="deployResult" class="deploy-result">
                   <p class="deploy-result-title">Last deployment</p>
                   <p class="deploy-result-row">
@@ -429,7 +452,9 @@
         <aside class="mrsol-preview">
           <h3>Live configuration preview</h3>
           <p class="preview-sub">
-            This panel updates as you adjust values and enable features.
+            This panel updates instantly as you adjust values and enable
+            features — so you always see the final shape of your Solana token
+            before deploying.
           </p>
 
           <div class="preview-card" id="previewCard">
