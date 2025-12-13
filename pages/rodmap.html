@@ -5,20 +5,19 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>i2165062 | Rodmap</title>
   <meta name="description" content="i2165062 Rodmap — Middle East blockchain ecosystem by Ali Asadi." />
-	<link rel="icon" type="image/x-icon" href="../images/PC22.ico" />
-	<!-- iOS / iPadOS Home Screen -->
-<link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon-180.png" />
 
-<!-- Android / Chrome PWA -->
-<link rel="manifest" href="/site.webmanifest" />
-<meta name="theme-color" content="#0b0e11" />
+  <!-- Open Graph / Social Preview -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="i2165062 | Rodmap" />
+  <meta property="og:description" content="Middle East Blockchain Network — roadmap, infrastructure, and long-term vision by Ali Asadi." />
+  <meta property="og:image" content="../images/og/rodmap.png" />
+  <meta property="og:url" content="https://i2165062.com/pages/rodmap.html" />
 
-<!-- Safari pinned tab (macOS) - تک‌رنگ -->
-<link rel="mask-icon" href="../images/safari-pinned-tab.svg" color="#c5a15b" />
-
-<!-- Windows tiles (اختیاری) -->
-<meta name="msapplication-TileColor" content="#0b0e11" />
-<meta name="msapplication-square150x150logo" content="../images/mstile-150.png" />
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="i2165062 | Rodmap" />
+  <meta name="twitter:description" content="Infrastructure-first blockchain ecosystem for the Middle East." />
+  <meta name="twitter:image" content="../images/og/rodmap.png" />
 
   <style>
     :root{
@@ -33,7 +32,6 @@
       --olive2:#a6be3a;
       --glow: rgba(166, 190, 58, .18);
       --shadow: 0 18px 60px rgba(0,0,0,.55);
-      --radius: 20px;
       --radius2: 28px;
       --max: 1180px;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -58,6 +56,7 @@
     a:hover{ opacity:.92; }
     .wrap{ width:min(var(--max), calc(100% - 40px)); margin:0 auto; }
 
+    /* Top */
     header{
       position:sticky;
       top:0;
@@ -79,24 +78,18 @@
       gap:12px;
       min-width:220px;
     }
-    .mark{
-      width:38px; height:38px;
+
+    /* Logo image */
+    .mark-img{
+      width:38px;
+      height:38px;
       border-radius:14px;
       border:1px solid rgba(166,190,58,.35);
-      background:
-        radial-gradient(18px 18px at 28% 30%, rgba(166,190,58,.35), transparent 60%),
-        radial-gradient(22px 22px at 70% 75%, rgba(122,143,42,.25), transparent 60%),
-        linear-gradient(180deg, rgba(20,28,22,.75), rgba(10,14,11,.6));
+      object-fit:contain;
+      background: rgba(14,21,16,.45);
       box-shadow: 0 10px 30px rgba(0,0,0,.35);
-      position:relative;
-      overflow:hidden;
     }
-    .mark::after{
-      content:"";
-      position:absolute; inset:-1px;
-      background: radial-gradient(120px 60px at 10% 10%, rgba(255,255,255,.08), transparent 55%);
-      pointer-events:none;
-    }
+
     .brand h1{
       font-size:14px;
       margin:0;
@@ -109,6 +102,7 @@
       font-size:12px;
       color: var(--muted);
     }
+
     .nav{
       display:flex;
       flex-wrap:wrap;
@@ -139,6 +133,7 @@
       box-shadow: 0 0 18px rgba(166,190,58,.55);
     }
 
+    /* Hero */
     .hero{ padding:34px 0 18px; }
     .heroGrid{
       display:grid;
@@ -274,6 +269,7 @@
     }
     .tag strong{ color: var(--olive2); font-weight:700; }
 
+    /* Section */
     section{ padding:22px 0; }
     .sectionTitle{
       display:flex;
@@ -293,6 +289,7 @@
       font-size:13px;
     }
 
+    /* Timeline */
     .timeline{ padding:18px; }
     .tlRow{
       display:grid;
@@ -419,6 +416,7 @@
       box-shadow:none;
     }
 
+    /* Modules grid */
     .grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
     .module{
       padding:16px;
@@ -459,11 +457,15 @@
       background: rgba(8,12,9,.25);
     }
 
+    /* Coming soon (disabled) */
     .soon{
       opacity:.55;
       filter:saturate(.8);
     }
-    .soon .mini a{ pointer-events:none; cursor:not-allowed; }
+    .soon .mini a{
+      pointer-events:none;
+      cursor:not-allowed;
+    }
     .soonBadge{
       display:inline-flex;
       align-items:center;
@@ -478,6 +480,7 @@
       letter-spacing:.3px;
     }
 
+    /* Locks */
     .locks{ padding:18px; }
     .lockNote{
       color: var(--muted);
@@ -521,6 +524,7 @@
       background: rgba(14,21,16,.55);
     }
 
+    /* Footer */
     footer{
       padding:18px 0 40px;
       border-top: 1px solid rgba(44,70,51,.35);
@@ -536,6 +540,7 @@
     }
     .foot b{ color: var(--text); font-weight:700; }
 
+    /* Responsive */
     @media (max-width: 980px){
       .heroGrid{ grid-template-columns: 1fr; }
       .metrics{ grid-template-columns: 1fr; }
@@ -547,9 +552,11 @@
       .brand{ min-width:auto; }
     }
 
+    /* Anim */
     .reveal{ opacity:0; transform: translateY(8px); transition: opacity .55s ease, transform .55s ease; }
     .reveal.on{ opacity:1; transform: translateY(0); }
 
+    /* Toast */
     .toast{
       position:fixed;
       left:50%;
@@ -579,7 +586,7 @@
   <div class="wrap">
     <div class="topbar">
       <div class="brand">
-        <div class="mark" aria-hidden="true"></div>
+        <img class="mark-img" src="../images/PC2.png" alt="i2165062 logo" />
         <div>
           <h1>i2165062 — Rodmap</h1>
           <p>Middle East Blockchain Network • Built by <b>Ali Asadi</b></p>
@@ -597,6 +604,7 @@
 </header>
 
 <main class="wrap">
+  <!-- HERO -->
   <section class="hero">
     <div class="heroGrid">
       <div class="card heroMain reveal">
@@ -632,8 +640,8 @@
           <div class="tagrow" aria-label="External links">
             <a class="tag" target="_blank" rel="noopener" href="https://www.dextools.io/app/token/i21">DexTools</a>
             <a class="tag" target="_blank" rel="noopener" href="https://pump.fun/coin/4FCmKPqgpNVbzyBRtWPsh9mz3DCoqJFzTvazeAhzpump">Pump.fun</a>
-            <a class="tag" target="_blank" rel="noopener" href="#" id="xLink">X (Twitter)</a>
-            <a class="tag" target="_blank" rel="noopener" href="#" id="tgLink">Telegram</a>
+            <a class="tag" target="_blank" rel="noopener" href="https://t.me/i2165062" id="tgLink">Telegram</a>
+            <a class="tag" target="_blank" rel="noopener" href="https://x.com/" id="xLink">X (Twitter)</a>
             <a class="tag" id="pdfLink" href="i2165062_Angel_Investor_Overview.pdf" download>Investor PDF</a>
           </div>
         </div>
@@ -655,6 +663,7 @@
     </div>
   </section>
 
+  <!-- TIMELINE -->
   <section id="timeline">
     <div class="sectionTitle">
       <div>
@@ -803,6 +812,7 @@
     </div>
   </section>
 
+  <!-- TOKEN LOCKS -->
   <section id="locks">
     <div class="sectionTitle">
       <div>
@@ -831,6 +841,7 @@
     </div>
   </section>
 
+  <!-- WHAT'S BUILT -->
   <section id="built">
     <div class="sectionTitle">
       <div>
@@ -870,6 +881,7 @@
     </div>
   </section>
 
+  <!-- NEXT STEPS (COMING SOON, NO CLICKS) -->
   <section id="next">
     <div class="sectionTitle">
       <div>
@@ -929,10 +941,10 @@
 <div class="toast" id="toast">Copied</div>
 
 <script>
-  // Put your real socials here (optional)
+  // Fixed socials (as requested)
   const LINKS = {
     x: "https://x.com/",
-    telegram: "https://t.me/"
+    telegram: "https://t.me/i2165062"
   };
 
   const setHref = (id, url) => {
@@ -950,6 +962,7 @@
 
   document.getElementById("year").textContent = new Date().getFullYear();
 
+  // Reveal on scroll
   const reveals = Array.from(document.querySelectorAll(".reveal"));
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{
@@ -958,14 +971,16 @@
   }, { threshold: 0.12 });
   reveals.forEach(r=> io.observe(r));
 
-  const done = 5, total = 8;
-  const pct = Math.round((done/total)*100);
+  // Progress = 29% (as requested)
+  const pct = 29;
   document.getElementById("pctText").textContent = pct + "%";
   const fill = document.getElementById("barFill");
   requestAnimationFrame(()=>{ fill.style.width = pct + "%"; });
 
+  // Copy buttons
   const toast = document.getElementById("toast");
   let toastTimer = null;
+
   const showToast = (msg) => {
     toast.textContent = msg;
     toast.classList.add("on");
@@ -979,6 +994,7 @@
       const el = document.querySelector(sel);
       const text = el ? el.textContent.trim() : "";
       if(!text) return;
+
       try{
         await navigator.clipboard.writeText(text);
         showToast("Copied");
