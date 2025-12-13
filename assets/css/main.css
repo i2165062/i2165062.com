@@ -11,7 +11,11 @@
   --bg0:#f7f8f9;
   --bg1:#eef0f2;
   --radius:18px;
-  
+
+  /* Drawer (minimal) */
+  --drawer-bg: rgba(255,255,255,0.78);
+  --drawer-border: rgba(0,0,0,0.08);
+  --drawer-shadow: 0 24px 70px rgba(0,0,0,0.18);
 }
 
 * {
@@ -47,22 +51,24 @@ body {
   margin-bottom: 28px;
 }
 
-/* Logo image styling */
-.site-logo {
-  width: 250px;
-  height: 250px;
-  object-fit: contain;
+/* (مطابق نسخه HTML شما) */
+.logo {
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  transition: transform 0.3s ease;
-  display: block;
-  margin: 0 auto 20px;
+  background: #3a3f44;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 16px auto;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,.08),
+              0 6px 16px rgba(0,0,0,.25);
+  position: relative;
 }
-
-.site-logo:hover {
-  transform: scale(1.08);
+.logo img {
+  width: 80%;
+  height: auto;
+  filter: drop-shadow(0 1px 1px rgba(255,255,255,0.3));
 }
-
-
 
 .title {
   font-size: clamp(22px, 3vw, 30px);
@@ -86,16 +92,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  gap: 2vw;                  /* فاصله نسبی بین کارت‌ها */
+  gap: 2vw;
   flex-wrap: nowrap;
   width: 100%;
-  max-width: 1200px;         /* کنترل عرض کلی */
+  max-width: 1200px;
   margin: 10px auto 40px;
-  overflow: hidden;          /* حذف اسکرول در دسکتاپ */
+  overflow: hidden;
   padding: 0 1vw;
 }
 
-/* هر کارت ~۲۵٪ از عرض صفحه */
 .card {
   flex: 0 0 calc(25% - 2vw);
   height: clamp(260px, 28vw, 320px);
@@ -118,7 +123,6 @@ body {
   box-shadow: 0 18px 40px rgba(0,0,0,0.25);
 }
 
-/* تصویر تمام‌قد با زوم نرم هنگام Hover */
 .shot {
   width: 100%;
   height: 100%;
@@ -129,7 +133,6 @@ body {
   transform: scale(1.05);
 }
 
-/* ---------- لایه‌ی گرادیان و نام کشور ---------- */
 .overlay {
   position: absolute;
   bottom: 0;
@@ -189,7 +192,6 @@ body {
   pointer-events: none;
 }
 
-/* ---------- افکت درخشش نرم ---------- */
 @keyframes shimmer {
   0% { opacity: 0.4; }
   50% { opacity: 0.55; }
@@ -224,6 +226,233 @@ nav a:hover {
 }
 
 /* =========================================================
+   Socials (پایین صفحه)
+   ========================================================= */
+.socials{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  margin-top:18px;
+  padding-top:14px;
+  border-top:1px solid var(--line);
+  width: min(900px, 100%);
+}
+
+.social{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-decoration:none;
+  color: var(--ink);
+  font-size: 11.5px;
+  letter-spacing:.12em;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: rgba(255,255,255,.72);
+  transition: transform .18s ease, background .18s ease;
+}
+
+.social:hover{
+  background:#fff;
+  transform: translateY(-1px);
+}
+
+.social svg{
+  width:16px;
+  height:16px;
+  fill: currentColor;
+  opacity:.9;
+}
+
+/* =========================================================
+   Drawer Menu (Left)
+   ========================================================= */
+
+.drawer-btn{
+  position: fixed;
+  left: 14px;
+  top: 16px;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid var(--drawer-border);
+  background: rgba(255,255,255,0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.12);
+  cursor: pointer;
+  z-index: 1001;
+  display: grid;
+  place-items: center;
+  transition: transform .18s ease, background .18s ease;
+}
+.drawer-btn:hover{
+  background: rgba(255,255,255,0.9);
+  transform: translateY(-1px);
+}
+
+.drawer-btn__icon{
+  width: 18px;
+  height: 12px;
+  position: relative;
+  display:block;
+}
+.drawer-btn__icon::before,
+.drawer-btn__icon::after,
+.drawer-btn__icon{
+  background: transparent;
+}
+.drawer-btn__icon::before,
+.drawer-btn__icon::after{
+  content:"";
+  position:absolute;
+  left:0;
+  width: 18px;
+  height: 2px;
+  background: rgba(43,47,53,0.85);
+  border-radius: 2px;
+}
+.drawer-btn__icon::before{ top: 1px; }
+.drawer-btn__icon::after{ bottom: 1px; }
+.drawer-btn__icon{
+  border-top: 2px solid rgba(43,47,53,0.85);
+  border-radius: 2px;
+}
+
+/* Backdrop */
+.drawer-backdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.18);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1000;
+}
+
+/* Drawer Panel */
+.drawer{
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  width: min(340px, calc(100vw - 24px));
+  border-radius: 18px;
+  background: var(--drawer-bg);
+  border: 1px solid var(--drawer-border);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--drawer-shadow);
+  z-index: 1002;
+
+  transform: translateX(-110%);
+  transition: transform .22s ease;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.drawer.is-open{
+  transform: translateX(0);
+}
+
+.drawer__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 14px 14px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+
+.drawer__brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.drawer__dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background: rgba(43,47,53,0.7);
+  box-shadow: 0 0 0 6px rgba(43,47,53,0.06);
+}
+
+.drawer__title{
+  font-weight:700;
+  letter-spacing:.08em;
+  font-size: 12px;
+}
+.drawer__sub{
+  font-size: 10px;
+  letter-spacing: .18em;
+  color: var(--muted);
+  margin-top:2px;
+}
+
+.drawer__close{
+  width: 34px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.65);
+  cursor:pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+.drawer__close:hover{
+  background:#fff;
+  transform: translateY(-1px);
+}
+
+.drawer__nav{
+  padding: 12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.drawer__item{
+  text-decoration:none;
+  color: var(--ink);
+  border: 1px solid rgba(0,0,0,0.08);
+  background: rgba(255,255,255,0.62);
+  border-radius: 16px;
+  padding: 12px 12px;
+  transition: transform .18s ease, background .18s ease;
+}
+.drawer__item:hover{
+  background:#fff;
+  transform: translateY(-1px);
+}
+
+.drawer__kicker{
+  display:block;
+  font-size: 10px;
+  letter-spacing: .22em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.drawer__label{
+  display:block;
+  margin-top:6px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .04em;
+}
+
+.drawer__foot{
+  margin-top:auto;
+  padding: 12px 14px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+}
+.drawer__hint{
+  font-size: 10px;
+  letter-spacing: .18em;
+  color: var(--muted);
+}
+
+/* =========================================================
    نسخه واکنش‌گرا برای موبایل و تبلت
    ========================================================= */
 @media (max-width: 900px) {
@@ -243,9 +472,12 @@ nav a:hover {
 }
 
 @media (max-width: 600px) {
-  .logo { width: 80px; height: 80px; }
   .overlay span { font-size: 15px; }
+  .drawer-btn{ top: 12px; left: 12px; }
+  .socials{ gap:10px; }
+  .social{ padding: 7px 10px; }
 }
+
 /* ---------- نقاط زیر اسلایدر ---------- */
 .slider-dots {
   display: flex;
@@ -265,4 +497,3 @@ nav a:hover {
   background: var(--accent, #00bfa6);
   transform: scale(1.2);
 }
-
