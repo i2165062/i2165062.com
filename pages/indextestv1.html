@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>i2165062 — Home</title>
+
+  <link rel="icon" type="image/x-icon" href="../images/PC22.ico" />
+  <!-- iOS / iPadOS Home Screen -->
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon-180.png" />
+
+  <!-- Android / Chrome PWA -->
+  <link rel="manifest" href="/site.webmanifest" />
+  <meta name="theme-color" content="#0b0e11" />
+
+  <!-- Safari pinned tab (macOS) - تک‌رنگ -->
+  <link rel="mask-icon" href="../images/safari-pinned-tab.svg" color="#c5a15b" />
+
+  <!-- Windows tiles (اختیاری) -->
+  <meta name="msapplication-TileColor" content="#0b0e11" />
+  <meta name="msapplication-square150x150logo" content="../images/mstile-150.png" />
+
+  <!-- فونت (اختیاری) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- CSS اصلی -->
+  <link rel="stylesheet" href="main.css" />
+</head>
+
+<body>
+
+  <!-- ===== Left Drawer Toggle ===== -->
+  <button class="drawer-btn" id="drawerBtn" aria-label="Open menu" aria-controls="drawer" aria-expanded="false">
+    <span class="drawer-btn__icon" aria-hidden="true"></span>
+  </button>
+
+  <!-- ===== Backdrop ===== -->
+  <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+
+  <!-- ===== Drawer ===== -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer__head">
+      <div class="drawer__brand">
+        <span class="drawer__dot" aria-hidden="true"></span>
+        <div class="drawer__txt">
+          <div class="drawer__title">i2165062</div>
+          <div class="drawer__sub">Quick Navigation</div>
+        </div>
+      </div>
+
+      <button class="drawer__close" id="drawerClose" aria-label="Close menu">
+        ✕
+      </button>
+    </div>
+
+    <nav class="drawer__nav" aria-label="Site menu">
+      <a class="drawer__item" href="https://irannft.art/pages/token.html" target="_blank" rel="noopener">
+        <span class="drawer__kicker">i21 token</span>
+        <span class="drawer__label">Dashboard</span>
+      </a>
+
+      <a class="drawer__item" href="https://irannft.art/pages/market.html" target="_blank" rel="noopener">
+        <span class="drawer__kicker">NFT Marketplace</span>
+        <span class="drawer__label">Market</span>
+      </a>
+
+      <a class="drawer__item" href="https://i2165062.com/pages/mrsol-builder.html" target="_blank" rel="noopener">
+        <span class="drawer__kicker">MrSol</span>
+        <span class="drawer__label">Contract Builder</span>
+      </a>
+
+      <a class="drawer__item" href="https://i2165062.com/pages/rodmap.html" target="_blank" rel="noopener">
+        <span class="drawer__kicker">rodmap</span>
+        <span class="drawer__label">Progress & Milestones</span>
+      </a>
+    </nav>
+
+    <div class="drawer__foot">
+      <div class="drawer__hint">ESC to close</div>
+    </div>
+  </aside>
+
+  <main class="wrap">
+
+    <!-- ---------- لوگو و عنوان ---------- -->
+    <div class="logo-wrap">
+      <div class="logo">
+        <img src="images/pc2.png" alt="i2165062 logo" />
+      </div>
+      <h1 class="title">i2165062</h1>
+      <div class="tagline">EVERYONE WILL FEEL IT</div>
+    </div>
+
+    <!-- ---------- کارت‌ها ---------- -->
+    <div class="rail" id="rail">
+      <a href="https://irannft.art/" class="card" data-tilt="left">
+        <img src="images/iran.png" class="shot" alt="Iran" />
+        <div class="overlay"><span>Iran</span></div>
+      </a>
+
+      <a href="#egypt.html" class="card" data-tilt="center">
+        <img src="images/egypt.png" class="shot" alt="Egypt" />
+        <div class="overlay"><span>coming soon</span></div>
+      </a>
+
+      <a href="#saudi.html" class="card" data-tilt="center">
+        <img src="images/saudi.png" class="shot" alt="Saudi Arabia" />
+        <div class="overlay"><span>coming soon</span></div>
+      </a>
+
+      <a href="#turkey.html" class="card" data-tilt="right">
+        <img src="images/turkey.png" class="shot" alt="Turkey " />
+        <div class="overlay"><span>coming soon</span></div>
+      </a>
+    </div>
+
+    <!-- ---------- نقاط زیر اسلایدر (اگر داری استفاده می‌کنی همین می‌مونه) ---------- -->
+    <!-- <div class="slider-dots">
+      <span class="dot active"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+      <span class="dot"></span>
+    </div> -->
+
+    <!-- ---------- منوی پایین ---------- -->
+    <nav>
+      <a href="intro.html">INTRO</a>
+      <a href="pages/what-is-i2165062.html">WHAT IS I2165062</a>
+      <a href="https://irannft.art/pages/token.html">BUY</a>
+      <a href="pages/nft.html">NFT</a>
+      <a href="pages/contact.html">CONTACT US</a>
+    </nav>
+
+    <!-- ===== Socials (پایین صفحه) ===== -->
+    <footer class="socials" aria-label="Social links">
+      <a class="social" href="https://x.com/" target="_blank" rel="noopener" aria-label="Twitter / X">
+        <!-- X icon -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 2H22l-6.8 7.8L23 22h-6.8l-5.3-6.5L5.3 22H2l7.3-8.4L1 2h7l4.8 6.1L18.9 2Zm-1.2 18h1.8L7.2 3.9H5.3L17.7 20Z"/></svg>
+        <span>X</span>
+      </a>
+
+      <a class="social" href="https://github.com/" target="_blank" rel="noopener" aria-label="GitHub">
+        <!-- GitHub icon -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.7.5.6 5.7.6 12.2c0 5.2 3.4 9.6 8.1 11.1.6.1.8-.3.8-.6v-2.1c-3.3.7-4-1.4-4-1.4-.6-1.6-1.5-2-1.5-2-1.2-.8.1-.8.1-.8 1.3.1 2 .9 2 .9 1.1 1.9 2.9 1.4 3.6 1.1.1-.8.4-1.4.8-1.7-2.6-.3-5.3-1.3-5.3-5.9 0-1.3.4-2.3 1.1-3.1-.1-.3-.5-1.5.1-3.1 0 0 .9-.3 3 .1.9-.3 1.8-.4 2.8-.4 1 0 1.9.1 2.8.4 2.1-.4 3-.1 3-.1.6 1.6.2 2.8.1 3.1.7.8 1.1 1.8 1.1 3.1 0 4.6-2.7 5.6-5.3 5.9.4.4.8 1.1.8 2.2v3.2c0 .3.2.7.8.6 4.7-1.5 8.1-5.9 8.1-11.1C23.4 5.7 18.3.5 12 .5Z"/></svg>
+        <span>GitHub</span>
+      </a>
+
+      <a class="social" href="https://t.me/" target="_blank" rel="noopener" aria-label="Telegram">
+        <!-- Telegram icon -->
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.7 4.3c.3-.9-.6-1.7-1.4-1.4L2.9 9.7c-1 .4-.9 1.8.2 2.1l4.6 1.4 1.7 5.6c.3 1 1.6 1.2 2.2.3l2.6-3.6 4.8 3.5c.9.6 2 .1 2.3-.9l2.4-13.2ZM8.5 12.6l9.9-6.1-7.9 7.8-.3 3.6-1.7-5.3Z"/></svg>
+        <span>Telegram</span>
+      </a>
+    </footer>
+
+  </main>
+
+  <!-- JS اصلی -->
+  <script src="maintestv1.js"></script>
+</body>
+</html>
